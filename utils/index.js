@@ -48,6 +48,7 @@ export { request } from './lib/request.js';
 export { ro } from './lib/ro.js';
 export { round } from './lib/round.js';
 export { safe } from './lib/safe.js';
+export { settled } from './lib/settled.js';
 export { shuffle } from './lib/shuffle.js';
 export { slug } from './lib/slug.js';
 export { svg } from './lib/svg.js';

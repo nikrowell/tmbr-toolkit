@@ -15,6 +15,7 @@ import {
   on,
   pipe,
   safe,
+  settled,
   toJSON,
   traverse
 } from './index.js';
@@ -181,10 +182,20 @@ test('pipe', () => {
 });
 
 test('safe', async () => {
-  const errorTrigger = async () => fail();
+  const errorTrigger = snoop(async () => fail());
   const errorHandler = snoop(noop);
-  await safe(errorTrigger, errorHandler.fn)();
+  await safe(errorTrigger.fn, errorHandler.fn)();
+  assert.ok(errorTrigger.called);
   assert.ok(errorHandler.called);
+});
+
+test('settled', async () => {
+  const [res,] = await settled(Promise.resolve('Success'));
+  assert.equal(res, 'Success');
+  const [,err] = await settled(Promise.reject('Fail'));
+  assert.equal(err, 'Fail');
+  const data = await settled(Promise.resolve({message: 'Hello'}), ({value}) => value);
+  assert.equal(data.message, 'Hello');
 });
 
 test('toJSON', () => {
