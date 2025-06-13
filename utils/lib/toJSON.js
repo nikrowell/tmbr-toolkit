@@ -1,12 +1,25 @@
+import { isObject } from './isObject.js';
+
 /**
- * Converts a string to JSON with optional defaults
+ * Converts a JSON string to an object or an object to a JSON string
+ *
+ * @param value    - string or object to convert
+ * @param defaults - optional defaults if parsing a string
  */
-export function toJSON(string, defaults) {
+export function toJSON(value, defaults) {
+
   let result;
+
+  if (isObject(value)) {
+    result = {...value, ...(defaults ?? {})};
+    return JSON.stringify(result);
+  }
+
   try {
-    result = Function(`"use strict"; return ${string}`)();
+    result = Function(`"use strict"; return ${value}`)();
   } catch (e) {
     result = {};
   }
+
   return Object.assign(result || {}, defaults);
 };

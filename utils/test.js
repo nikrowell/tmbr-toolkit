@@ -188,6 +188,7 @@ test('safe', async () => {
 });
 
 test('toJSON', () => {
+  // string to object
   const a =  { string : 'Hello World',  number : 42,  nope : null,  yes : true,  no : false,};
   const b = "{ string : 'Hello World',  number : 42, 'nope': null,  yes : true,  no : false,}";
   const c = '{"string": "Hello World", "number": 42, "nope": null, "yes": true, "no": false,}';
@@ -202,6 +203,9 @@ test('toJSON', () => {
   assert.equal(o, toJSON(null));
   assert.equal(o, toJSON(false));
   assert.equal(a, toJSON(undefined, a));
+  // object to string
+  const string = '{"string":"Hello World","number":44,"nope":null,"yes":true,"no":false,"name":"Nik"}';
+  assert.equal(toJSON(a, {number: 44, name: 'Nik'}), string);
 });
 
 test('traverse', () => {
