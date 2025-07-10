@@ -16,7 +16,7 @@ export function toJSON(value, defaults) {
   }
 
   try {
-    result = Function(`"use strict"; return ${value}`)();
+    result = Function(`"use strict"; return ${value.trim()}`)();
   } catch (e) {
     result = {};
   }

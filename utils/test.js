@@ -200,9 +200,9 @@ test('settled', async () => {
 
 test('toJSON', () => {
   // string to object
-  const a =  { string : 'Hello World',  number : 42,  nope : null,  yes : true,  no : false,};
-  const b = "{ string : 'Hello World',  number : 42, 'nope': null,  yes : true,  no : false,}";
-  const c = '{"string": "Hello World", "number": 42, "nope": null, "yes": true, "no": false,}';
+  const a =    { string : 'Hello World',  number : 42,  nope : null,  yes : true,  no : false,};
+  const b = "\n{ string : 'Hello World',  number : 42, 'nope': null,  yes : true,  no : false,} ";
+  const c = '  {"string": "Hello World", "number": 42, "nope": null, "yes": true, "no": false,} ';
   const o = {};
   assert.equal(a, toJSON(b));
   assert.equal(a, toJSON(c));
