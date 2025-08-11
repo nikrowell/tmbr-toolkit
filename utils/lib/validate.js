@@ -1,4 +1,5 @@
 import { isString } from './isString.js';
+import { isObject } from './isObject.js';
 
 /**
  * Validates data against a set of rules
@@ -36,8 +37,14 @@ export function validate(data, rules) {
 
   for (let key in rules) {
     const value = data[key];
-    const error = rules[key](value, data);
-    isString(error) && (errors[key] = error);
+    const error = rules[key](isString(value) ? value.trim() : value, data);
+
+    if (isString(error)) {
+      errors[key] = error;
+    }
+    if (isObject(error)) {
+      Object.assign(errors, error);
+    }
   }
 
   return Object.keys(errors).length ? errors : null;
