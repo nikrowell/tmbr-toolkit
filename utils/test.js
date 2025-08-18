@@ -10,6 +10,7 @@ import {
   findAll,
   html,
   isObject,
+  isElement,
   noop,
   observable,
   on,
@@ -87,16 +88,45 @@ test('cx', () => {
 
 test('html', () => {
   const frag = new DocumentFragment();
-  frag.append(html`<li>a</li>`);
-  frag.append(html`<li>b</li><li>${div}</li>`);
+  frag.append(html`<li>foo</li>`);
+  frag.append(html`<li>bar</li> <li>${div}</li>`);
 
-  const list = html`<ul>${frag}</ul>`;
-  assert.is(list.innerHTML, '<li>a</li><li>b</li><li><div></div></li>');
+  const arrayOfElements = [
+    html`<li>array of</li>`,
+    html`<li>elements</li>`,
+  ];
+
+  const arrayOfStrings = [
+    `<li>array of</li>`,
+    `<li>strings</li>`,
+  ];
+
+  const list = html`<ul>${frag} ${arrayOfElements} ${arrayOfStrings}</ul>`;
+
+  assert.is(list.children.length, 7);
   assert.is(list.children[2].firstElementChild, div);
+
+  assert.is(list.innerHTML, [
+    '<li>foo</li>',
+    '<li>bar</li>',
+    ' <li><div></div></li>',
+    ' <li>array of</li><li>elements</li>',
+    ' <li>array of</li><li>strings</li>',
+  ].join(''));
 
   const button = html`<button type="button" class="button">Submit</button>`;
   assert.is(button.className, 'button');
   assert.is(button.textContent, 'Submit');
+});
+
+test('isElement', () => {
+  assert.not.ok(isElement({}));
+  assert.not.ok(isElement(null));
+  assert.not.ok(isElement(true));
+  assert.not.ok(isElement(false));
+  assert.not.ok(isElement('div'));
+  assert.ok(isElement(div));
+  assert.ok(isElement(div, 'div'));
 });
 
 test('isObject', () => {
