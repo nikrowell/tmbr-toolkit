@@ -7,7 +7,7 @@ import { isObject } from './isObject.js';
  * @param path   - string path
  * @param value  - optional value to set
  *
- * @returns target object if setting (for chaining) or value if getting
+ * @returns target object if setting or nested value if getting
  */
 export function dot(object, path, value) {
   return arguments.length === 3 ? set(object, path, value) : get(object, path);

@@ -8,10 +8,9 @@
 export function throttle(fn, wait) {
   let throttled;
   return function(...args) {
-    if (!throttled) {
-      fn.apply(this, args);
-      throttled = true;
-      setTimeout(() => throttled = false, wait);
-    }
-  }
+    if (throttled) return;
+    fn.apply(this, args);
+    throttled = true;
+    setTimeout(() => throttled = false, wait);
+  };
 };
