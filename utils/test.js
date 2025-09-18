@@ -11,6 +11,7 @@ import {
   html,
   isObject,
   isElement,
+  isEmpty,
   noop,
   observable,
   on,
@@ -127,6 +128,30 @@ test('isElement', () => {
   assert.not.ok(isElement('div'));
   assert.ok(isElement(div));
   assert.ok(isElement(div, 'div'));
+});
+
+test('isEmpty', () => {
+  assert.not.ok(isEmpty('hello'));
+  assert.not.ok(isEmpty(new String('hello')));
+  assert.not.ok(isEmpty({hello: 'world'}));
+  assert.not.ok(isEmpty([1, 2]));
+  assert.not.ok(isEmpty(new Set([1, 2, 2])));
+  assert.not.ok(isEmpty(new Map([['a', 1]])));
+  assert.not.ok(isEmpty(true));
+  assert.not.ok(isEmpty(1));
+
+  assert.ok(isEmpty(undefined));
+  assert.ok(isEmpty(null));
+  assert.ok(isEmpty(false));
+  assert.ok(isEmpty(0));
+  assert.ok(isEmpty(''));
+  assert.ok(isEmpty([]));
+  assert.ok(isEmpty({}));
+  // assert.ok(isEmpty(new Boolean()));
+  // assert.ok(isEmpty(new String()));
+  // assert.ok(isEmpty(new Set()));
+  // assert.ok(isEmpty(new Map()));
+  // assert.ok(isEmpty(Symbol('abc')));
 });
 
 test('isObject', () => {
