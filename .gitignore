@@ -8,5 +8,6 @@ node_modules
 !README.md
 !carousel/
 !emitter/
+!shader/
 !store/
 !utils/
