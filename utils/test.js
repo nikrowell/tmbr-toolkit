@@ -7,7 +7,7 @@ import {
   combine,
   cx,
   dot,
-  findAll,
+  format,
   html,
   isObject,
   isElement,
@@ -51,6 +51,14 @@ test('combine', () => {
   assert.equal(b.calls[0].arguments, ['foo', 'bar']);
 });
 
+test('cx', () => {
+  const classes = cx('one', {'two': true, 'three': 0}, [true && 'four', null && 'five']);
+  /*      */ cx(div, 'one', {'two': true, 'three': 0}, [true && 'four', null && 'five']);
+  assert.is(classes, 'one two four');
+  assert.is(classes, div.className);
+  assert.is(cx(div), div.classList);
+});
+
 test('dot', () => {
 
   const o = {
@@ -79,12 +87,9 @@ test('dot', () => {
   assert.equal(dot(o, 'a.b.c'), {d: 'Montana'});
 });
 
-test('cx', () => {
-  const classes = cx('one', {'two': true, 'three': 0}, [true && 'four', null && 'five']);
-  /*      */ cx(div, 'one', {'two': true, 'three': 0}, [true && 'four', null && 'five']);
-  assert.is(classes, 'one two four');
-  assert.is(classes, div.className);
-  assert.is(cx(div), div.classList);
+test('format', () => {
+  const date = new Date(2012, 5, 2, 16, 5, 1);
+  assert.is(format(`DDDD, MMMM Do, YYYY [at] h:mm a`, date), 'Saturday, June 2nd, 2012 at 4:05 pm');
 });
 
 test('html', () => {
@@ -196,7 +201,7 @@ test('observable', () => {
 
 test('on', () => {
 
-  const [ a, b ] = findAll('#on button');
+  const [ a, b ] = document.querySelectorAll('#on button');
 
   let callback = snoop(noop);
   let off;

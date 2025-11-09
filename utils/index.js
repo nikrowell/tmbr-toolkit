@@ -15,6 +15,7 @@ export { fill } from './lib/fill.js';
 export { findAll } from './lib/findAll.js';
 export { findOne } from './lib/findOne.js';
 export { focusables } from './lib/focusables.js';
+export { format } from './lib/format.js';
 export { html } from './lib/html.js';
 export { indexOf } from './lib/indexOf.js';
 export { io } from './lib/io.js';
