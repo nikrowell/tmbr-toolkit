@@ -4,8 +4,13 @@ import { isString } from './isString.js';
 /**
  * Formats a date according to the specified pattern
  *
+ * @example
+ * format('DDDD, MMMM Do, YYYY [at] h:mm a');
+ *
  * @param pattern - string of tokens
  * @param date    - optional date object, string or timestamp (defaults to the current time)
+ *
+ * @return formatted date string
  */
 export function format(pattern, date) {
   if (isNumber(date)) date = new Date(date);
@@ -13,6 +18,9 @@ export function format(pattern, date) {
   date ??= new Date();
   return pattern.replace(regex, match => match.startsWith('[') ? match.slice(1, -1) : formatters[match]?.(date) ?? match);
 };
+
+const regex = /(\[.*?\]|YYYY|YY|MMMM|MMM|MM|M|Do|DDDD|DDD|DD|D|HH|H|hh|h|mm|m|ss|s|A|a)/g;
+const $0 = n => String(n).padStart(2, '0');
 
 const months = [
   'January',
@@ -39,36 +47,36 @@ const days = [
   'Saturday',
 ];
 
-const ordinals = [
-  'st',
-  'nd',
-  'rd',
-  'th',
-];
+const ordinal = day => {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1  : return 'st';
+    case 2  : return 'nd';
+    case 3  : return 'rd';
+    default : return 'th';
+  }
+};
 
 const formatters = {
   YYYY : d => d.getFullYear(),
   YY   : d => String(d.getFullYear()).slice(-2),
   MMMM : d => months[d.getMonth()],
   MMM  : d => months[d.getMonth()].slice(0, 3),
-  MM   : d => pad(d.getMonth() + 1),
+  MM   : d => $0(d.getMonth() + 1),
   M    : d => d.getMonth() + 1,
   DDDD : d => days[d.getDay()],
   DDD  : d => days[d.getDay()].slice(0, 3),
-  DD   : d => pad(d.getDate()),
-  Do   : d => d.getDate() + (ordinals[d.getDate() - 1] ?? 'th'),
+  DD   : d => $0(d.getDate()),
+  Do   : d => d.getDate() + ordinal(d.getDate()),
   D    : d => d.getDate(),
-  HH   : d => pad(d.getHours()),
+  HH   : d => $0(d.getHours()),
   H    : d => d.getHours(),
-  hh   : d => pad(d.getHours() % 12 || 12),
+  hh   : d => $0(d.getHours() % 12 || 12),
   h    : d => d.getHours() % 12 || 12,
-  mm   : d => pad(d.getMinutes()),
+  mm   : d => $0(d.getMinutes()),
   m    : d => d.getMinutes(),
-  ss   : d => pad(d.getSeconds()),
+  ss   : d => $0(d.getSeconds()),
   s    : d => d.getSeconds(),
   A    : d => d.getHours() < 12 ? 'AM' : 'PM',
   a    : d => d.getHours() < 12 ? 'am' : 'pm',
 };
-
-const regex = /(\[.*?\]|YYYY|YY|MMMM|MMM|MM|M|Do|DDDD|DDD|DD|D|HH|H|hh|h|mm|m|ss|s|A|a)/g;
-const pad = n => String(n).padStart(2, '0');

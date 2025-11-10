@@ -1,5 +1,3 @@
-import { isArray } from './isArray.js';
-
 /**
  * Creates DOM elements using template literals
  * (based on {@link https://www.npmjs.com/package/facon facon}))
