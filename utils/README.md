@@ -39,6 +39,7 @@ Breaking changes introduced in version `2.0.0`:
 *   [findAll](#findall)
 *   [findOne](#findone)
 *   [focusables](#focusables)
+*   [format](#format)
 *   [html](#html)
 *   [indexOf](#indexof)
 *   [io](#io)
@@ -72,6 +73,7 @@ Breaking changes introduced in version `2.0.0`:
 *   [ro](#ro)
 *   [round](#round)
 *   [safe](#safe)
+*   [settled](#settled)
 *   [shuffle](#shuffle)
 *   [slug](#slug)
 *   [svg](#svg)
@@ -230,7 +232,7 @@ Gets or sets a dot-notated path within a nested object
 *   `path`  string path
 *   `value`  optional value to set
 
-Returns **any** target object if setting (for chaining) or value if getting
+Returns **any** target object if setting or nested value if getting
 
 ### empty
 
@@ -283,6 +285,23 @@ Returns **[array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Gl
 Exports an array of CSS selectors for elements that can receive focus
 (based on [focusable-selectors](https://github.com/KittyGiraudel/focusable-selectors))
 
+### format
+
+Formats a date according to the specified pattern
+
+#### Parameters
+
+*   `pattern`  string of tokens
+*   `date`  optional date object, string or timestamp (defaults to the current time)
+
+#### Examples
+
+```javascript
+format('DDDD, MMMM Do, YYYY [at] h:mm a');
+```
+
+Returns **any** formatted date string
+
 ### html
 
 Creates DOM elements using template literals
@@ -297,7 +316,7 @@ Creates DOM elements using template literals
 
 ```javascript
 const img = html`<img src="https://placehold.co/600x400" alt="">`;
-const div = html`<div>${img}</div>`;
+const div = html`<div class="example">${img}</div>`;
 ```
 
 ### indexOf
@@ -645,7 +664,16 @@ Returns **any** rounded value
 #### Parameters
 
 *   `fn`  try function
-*   `errorHandler`  catch function
+*   `handler`  catch function
+
+### settled
+
+[Await Error Handling](https://youtu.be/wsoQ-fgaoyQ)
+
+#### Parameters
+
+*   `promise`  Promise to await
+*   `handler`  optional function to handle the resolved or rejected promise
 
 ### shuffle
 
@@ -716,12 +744,12 @@ Converts a value to `true` or `false`
 
 ### toJSON
 
-Converts a string to JSON with optional defaults
+Converts a JSON string to an object or an object to a JSON string
 
 #### Parameters
 
-*   `string` &#x20;
-*   `defaults` &#x20;
+*   `value`  string or object to convert
+*   `defaults`  optional defaults if parsing a string
 
 ### toDegrees
 

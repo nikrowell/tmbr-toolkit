@@ -88,8 +88,19 @@ test('dot', () => {
 });
 
 test('format', () => {
-  const date = new Date(2012, 5, 2, 16, 5, 1);
-  assert.is(format(`DDDD, MMMM Do, YYYY [at] h:mm a`, date), 'Saturday, June 2nd, 2012 at 4:05 pm');
+  let date = new Date(2012, 5, 2, 16, 5, 30);
+  assert.is(format(`DDDD, MMMM Do, YYYY [at] h:mm:ss a`, date), 'Saturday, June 2nd, 2012 at 4:05:30 pm');
+
+  date = new Date(1999, 11, 31);
+  assert.is(format('Do', date), '31st');
+  date.setDate(23);
+  assert.is(format('Do', date), '23rd');
+  date.setDate(22);
+  assert.is(format('Do', date), '22nd');
+  date.setDate(21);
+  assert.is(format('Do', date), '21st');
+  date.setDate(11);
+  assert.is(format('Do', date), '11th');
 });
 
 test('html', () => {

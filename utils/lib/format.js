@@ -4,8 +4,13 @@ import { isString } from './isString.js';
 /**
  * Formats a date according to the specified pattern
  *
+ * @example
+ * format('DDDD, MMMM Do, YYYY [at] h:mm a');
+ *
  * @param pattern - string of tokens
  * @param date    - optional date object, string or timestamp (defaults to the current time)
+ *
+ * @return formatted date string
  */
 export function format(pattern, date) {
   if (isNumber(date)) date = new Date(date);
@@ -39,12 +44,15 @@ const days = [
   'Saturday',
 ];
 
-const ordinals = [
-  'st',
-  'nd',
-  'rd',
-  'th',
-];
+const ordinal = day => {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1  : return 'st';
+    case 2  : return 'nd';
+    case 3  : return 'rd';
+    default : return 'th';
+  }
+};
 
 const formatters = {
   YYYY : d => d.getFullYear(),
@@ -56,7 +64,7 @@ const formatters = {
   DDDD : d => days[d.getDay()],
   DDD  : d => days[d.getDay()].slice(0, 3),
   DD   : d => pad(d.getDate()),
-  Do   : d => d.getDate() + (ordinals[d.getDate() - 1] ?? 'th'),
+  Do   : d => d.getDate() + ordinal(d.getDate()),
   D    : d => d.getDate(),
   HH   : d => pad(d.getHours()),
   H    : d => d.getHours(),
