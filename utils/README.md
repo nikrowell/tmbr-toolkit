@@ -63,6 +63,7 @@ Breaking changes introduced in version `2.0.0`:
 *   [observable](#observable)
 *   [on](#on)
 *   [once](#once)
+*   [ordinal](#ordinal)
 *   [PI](#pi)
 *   [pipe](#pipe)
 *   [pledge](#pledge)
@@ -316,7 +317,7 @@ Creates DOM elements using template literals
 
 ```javascript
 const img = html`<img src="https://placehold.co/600x400" alt="">`;
-const div = html`<div class="example">${img}</div>`;
+const div = html`<div>${img}</div>`;
 ```
 
 ### indexOf
@@ -548,6 +549,17 @@ Wraps [on](#on) to create an event listener that will only fire once
 *   `target` &#x20;
 *   `callback` &#x20;
 *   `scope` &#x20;
+
+### ordinal
+
+Appends the ordinal suffix ('st', 'nd', 'rd', or 'th') to a given number
+
+#### Parameters
+
+*   `n` &#x20;
+*   `number` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** input number
+
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** string with input number and oridinal suffix
 
 ### PI
 

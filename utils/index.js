@@ -39,6 +39,7 @@ export { normalize } from './lib/normalize.js';
 export { observable } from './lib/observable.js';
 export { on } from './lib/on.js';
 export { once } from './lib/once.js';
+export { ordinal } from './lib/ordinal.js';
 export { PI, TWO_PI, HALF_PI  } from './lib/PI.js';
 export { pipe } from './lib/pipe.js';
 export { pledge } from './lib/pledge.js';

@@ -1,5 +1,6 @@
 import { isNumber } from './isNumber.js';
 import { isString } from './isString.js';
+import { ordinal } from './ordinal.js';
 
 /**
  * Formats a date according to the specified pattern
@@ -47,16 +48,6 @@ const days = [
   'Saturday',
 ];
 
-const ordinal = day => {
-  if (day > 3 && day < 21) return 'th';
-  switch (day % 10) {
-    case 1  : return 'st';
-    case 2  : return 'nd';
-    case 3  : return 'rd';
-    default : return 'th';
-  }
-};
-
 const formatters = {
   YYYY : d => d.getFullYear(),
   YY   : d => String(d.getFullYear()).slice(-2),
@@ -67,7 +58,7 @@ const formatters = {
   DDDD : d => days[d.getDay()],
   DDD  : d => days[d.getDay()].slice(0, 3),
   DD   : d => $0(d.getDate()),
-  Do   : d => d.getDate() + ordinal(d.getDate()),
+  Do   : d => ordinal(d.getDate()),
   D    : d => d.getDate(),
   HH   : d => $0(d.getHours()),
   H    : d => d.getHours(),

@@ -15,6 +15,7 @@ import {
   noop,
   observable,
   on,
+  ordinal,
   pipe,
   safe,
   settled,
@@ -241,6 +242,17 @@ test('on', () => {
 
   assert.equal(callback.firstCall.arguments[0].target, a);
   assert.ok(callback.calledOnce);
+});
+
+test('ordinal', () => {
+  assert.equal(ordinal(1), '1st');
+  assert.equal(ordinal(2), '2nd');
+  assert.equal(ordinal(3), '3rd');
+  assert.equal(ordinal(4), '4th');
+  assert.equal(ordinal(11), '11th');
+  assert.equal(ordinal(21), '21st');
+  assert.equal(ordinal(42), '42nd');
+  assert.equal(ordinal(103), '103rd');
 });
 
 test('pipe', () => {
