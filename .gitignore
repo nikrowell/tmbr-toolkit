@@ -6,6 +6,7 @@ node_modules
 !.gitignore
 !package.json
 !README.md
+!CLAUDE.md
 !carousel/
 !emitter/
 !shader/
