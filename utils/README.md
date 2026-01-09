@@ -99,11 +99,11 @@ Gets, sets or removes an attribute from an element
 
 #### Parameters
 
-*   `el`  element
-*   `name`  attribute name
-*   `value`  attribute value
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element
+*   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** attribute name
+*   `value` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean))** attribute value (falsy to remove)
 
-Returns **any** value (if getting) or undefined
+Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** attribute value when getting
 
 ### average
 
@@ -111,31 +111,38 @@ Calculates the average from an array of numbers
 
 #### Parameters
 
-*   `values` &#x20;
+*   `values` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)>** array of numbers
 
-Returns **any** number
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** average value
 
 ### bind
 
-Binds functions to a context or instance, including class getters and setters
-(based on [auto-bind](https://www.npmjs.com/package/auto-bind))
+Binds methods to an instance, including class getters and setters (based on [auto-bind](https://www.npmjs.com/package/auto-bind))
 
 #### Parameters
 
-*   `self`  target instance to be `this`
-*   `methods`  optional method(s) to bind as a string or array of names
+*   `self` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** target instance
+*   `methods` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>)** specific method name(s) to bind, or omit for all
 
-Returns **any** self for chaining
+#### Examples
+
+```javascript
+class Example {
+  constructor() { bind(this); }
+}
+```
+
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** self for chaining
 
 ### brightness
 
-Calculates brightness from an rgb array
+Calculates perceived brightness from an RGB array
 
 #### Parameters
 
-*   `rgb`  array of red, green and blue values in the range 0-255
+*   `rgb` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)>** \[r, g, b] values (0-255)
 
-Returns **any** brightness value between 0-255
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** brightness value (0-255)
 
 ### clamp
 
@@ -143,72 +150,90 @@ Clamps a value between two bounds
 
 #### Parameters
 
-*   `value`  value to clamp
-*   `min`  minimum boundary (0) (optional, default `0`)
-*   `max`  maximum boundary (1) (optional, default `1`)
+*   `value` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** value to clamp
+*   `min` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** minimum boundary (default: 0) (optional, default `0`)
+*   `max` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** maximum boundary (default: 1) (optional, default `1`)
 
-Returns **any** clamped value
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** clamped value
 
 ### combine
 
-Combines functions into a single callback
+Combines multiple functions into a single callback that calls all of them
 
 #### Parameters
 
-*   `fns` **...any** individual function arguments
+*   `fns` **...[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** functions to combine
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** combined function
 
 ### cookie
 
-Gets or sets a cookie
+Gets, sets, or deletes a cookie
 
 #### Parameters
 
-*   `name`  name of the cookie
-*   `value`  value to set (use `null` to delete)
-*   `options`  optional expiration days, [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) instance or object of attributes
+*   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** cookie name
+*   `value` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | null)** value to set, or null to delete
+*   `options` **([number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [Date](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date) | [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object))** expiration days, Date, or cookie attributes
 
 #### Examples
 
 ```javascript
-cookie('greeting', 'Hello');
-cookie('greeting'); // Hello
-cookie('greeting', null);
-
-cookie('example', 'Expire in 30 days', 30);
-cookie('example', 'Expire on this date', new Date(...));
-cookie('example', 'Custom cookie attributes', {SameSite: 'strict'});
+cookie('name', 'value');      // set
+cookie('name');               // get
+cookie('name', null);         // delete
+cookie('name', 'value', 30);  // expires in 30 days
 ```
+
+Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** cookie value when getting
 
 ### coords
 
-Gets the x and y coordinates of a pointer event,
-optionally relative to a target element
+Gets x and y coordinates from a pointer event, optionally relative to a target element
 
 #### Parameters
 
-*   `event`  event object
-*   `target`  optional target element
+*   `event` **[Event](https://developer.mozilla.org/docs/Web/API/Event)** mouse or touch event
+*   `target` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** optional element for relative coordinates
 
-Returns **any** object with x and y properties
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** object with x, y (and px, py percentages if target provided)
 
 ### cx
 
 Conditionally toggles classes on an element or generates a string of classes,
-similar to [classnames](https://www.npmjs.com/package/classnames))
+similar to [classnames](https://www.npmjs.com/package/classnames)
 
 #### Parameters
 
-*   `args` **...any**&#x20;
+*   `args` **...([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array))** class names, objects, or arrays
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** optional element to modify
+
+#### Examples
+
+```javascript
+cx('a', {'b': false, 'c': true}, [null && 'd', 'e']); // 'a c e'
+cx(el, 'active', {'visible': isVisible});
+```
+
+Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | DOMTokenList)** class string, or classList if element passed with no args
 
 ### debounce
 
-Creates a debounced version of a function which postpones execution
-until specified wait time since the function was last invoked
+Creates a debounced function that delays invocation until after wait ms have elapsed
+since the last call
 
 #### Parameters
 
-*   `fn`  function to debounce
-*   `wait`  time in milliseconds
+*   `fn` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** function to debounce
+*   `wait` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** delay in milliseconds
+
+#### Examples
+
+```javascript
+const debouncedFn = debounce(onInput, 300);
+```
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** debounced function
 
 ### distance
 
@@ -216,33 +241,39 @@ Calculates the distance between two points
 
 #### Parameters
 
-*   `x1` **mixed** x coordinate or object with x and y properties
-*   `y1` **mixed** y coordinate or object with x and y properties
-*   `x2` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** optional, x coordinate of the second point
-*   `y2` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** optional, y coordinate of the second point
+*   `x1` **([number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object))** x coordinate or object with x and y properties
+*   `y1` **([number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object))** y coordinate or object with x and y properties
+*   `x2` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** x coordinate of the second point (when using coordinates)
+*   `y2` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** y coordinate of the second point (when using coordinates)
 
 Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** distance
 
 ### dot
 
-Gets or sets a dot-notated path within a nested object
+Gets or sets a value at a dot-notated path within a nested object
 
 #### Parameters
 
-*   `object`  target object
-*   `path`  string path
-*   `value`  optional value to set
+*   `object` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** target object
+*   `path` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** dot-notated path (e.g., 'a.b.c')
+*   `value` **any** value to set (omit to get)
 
-Returns **any** target object if setting or nested value if getting
+#### Examples
+
+```javascript
+dot(obj, 'user.name');        // get
+dot(obj, 'user.name', 'Nik'); // set
+```
+
+Returns **any** nested value when getting, or object when setting
 
 ### empty
 
-Efficiently clears the DOM tree from the target element by removing all children,
-which is can be significantly faster than using `innerHTML`
+Removes all children from an element (can be significantly faster than `innerHTML`)
 
 #### Parameters
 
-*   `el` &#x20;
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element to empty
 
 #### Examples
 
@@ -251,101 +282,117 @@ const div = document.querySelector('.example');
 empty(div).append(fragment);
 ```
 
+Returns **[Element](https://developer.mozilla.org/docs/Web/API/Element)** the emptied element for chaining
+
 ### fill
 
-Fills an array of a specified length using a callback or value
+Creates an array of specified length filled with values
 
 #### Parameters
 
-*   `n`  length of array
-*   `value`  single value or callback that should return the value for the given index
+*   `n` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** array length
+*   `value` **(any | [Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function))** fill value, or function receiving index
 
-Returns **[array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)**&#x20;
+Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** filled array
 
 ### findAll
 
-`querySelectorAll` wrapper with an optional parent context that always converts the resulting
-[NodeList](https://developer.mozilla.org/en-US/docs/Web/API/NodeList) to an array
+querySelectorAll wrapper with optional parent context
 
 #### Parameters
 
-*   `selector` &#x20;
-*   `parent` &#x20;
+*   `selector` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** CSS selector
+*   `parent` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** parent element (default: document)
+
+Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[Element](https://developer.mozilla.org/docs/Web/API/Element)>** array of matching elements
 
 ### findOne
 
-`querySelector` wrapper with an optional parent context
+querySelector wrapper with optional parent context
 
 #### Parameters
 
-*   `selector` &#x20;
-*   `parent` &#x20;
+*   `selector` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** CSS selector
+*   `parent` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** parent element (default: document)
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | null)** matching element or null
 
 ### focusables
 
-Exports an array of CSS selectors for elements that can receive focus
-(based on [focusable-selectors](https://github.com/KittyGiraudel/focusable-selectors))
+Array of CSS selectors for focusable elements based on [focusable-selectors](https://github.com/KittyGiraudel/focusable-selectors)
+
+Type: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>
 
 ### format
 
-Formats a date according to the specified pattern
+Formats a date according to a pattern string
 
 #### Parameters
 
-*   `pattern`  string of tokens
-*   `date`  optional date object, string or timestamp (defaults to the current time)
+*   `pattern` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** format pattern (YYYY, MM, DD, HH, mm, ss, etc.)
+*   `date` **([Date](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date) | [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number))** date to format (default: now)
 
 #### Examples
 
 ```javascript
-format('DDDD, MMMM Do, YYYY [at] h:mm a');
+format('MMMM Do, YYYY');        // 'January 1st, 2024'
+format('YYYY-MM-DD', someDate); // '2024-01-01'
 ```
 
-Returns **any** formatted date string
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** formatted date string
 
 ### html
 
-Creates DOM elements using template literals
-(based on [facon](https://www.npmjs.com/package/facon)))
+Creates DOM elements using template literals, inspired by [facon](https://www.npmjs.com/package/facon)
 
 #### Parameters
 
-*   `strings` &#x20;
-*   `vars` **...any**&#x20;
+*   `strings` **TemplateStringsArray** template literal strings
+*   `vars` **...any** template literal values (strings, elements, or arrays)
 
 #### Examples
 
 ```javascript
-const img = html`<img src="https://placehold.co/600x400" alt="">`;
-const div = html`<div>${img}</div>`;
+const img = html`<img src="/image.jpg" alt="">`;
+const list = html`<ul>${items.map(i => html`<li>${i}</li>`)}</ul>`;
 ```
+
+Returns **([Element](https://developer.mozilla.org/docs/Web/API/Element) | [DocumentFragment](https://developer.mozilla.org/docs/Web/API/DocumentFragment))** single element or fragment if multiple root nodes
 
 ### indexOf
 
-Gets the child index of the provided element
+Gets the index of an element among its siblings
 
 #### Parameters
 
-*   `el` &#x20;
-*   `HTMLElement` &#x20;
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element to find index of
 
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)**&#x20;
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** index within parent's children
 
 ### io
 
-Tracks enter and leave events on the provided element
+Tracks enter and leave events on an element using IntersectionObserver
 
 #### Parameters
 
-*   `el`  element to observe
-*   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** object with optional `enter` and `leave` callbacks, `once` boolean and `...rest` args passed to the underlying [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver)
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element to observe
+*   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** enter/leave callbacks, once boolean, and IntersectionObserver options
 
     *   `options.enter` &#x20;
     *   `options.leave` &#x20;
     *   `options.once`   (optional, default `false`)
     *   `options.rest` **...any**&#x20;
 
-Returns **any** unobserve cleanup function
+#### Examples
+
+```javascript
+const unobserve = io(el, {
+  enter: () => console.log('enter'),
+  leave: () => console.log('leave'),
+});
+```
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to stop observing
 
 ### isArray
 
@@ -456,19 +503,19 @@ Performs linear interpolation between two values
 
 *   `a` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** current value
 *   `b` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** target value
-*   `n` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** progress
+*   `n` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** progress (0-1)
 
 Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** interpolated value
 
 ### luminance
 
-Calculates luminance from an rgb array
+Calculates relative luminance from an RGB array
 
 #### Parameters
 
-*   `rgb`  array of red, green and blue values in the range 0-255
+*   `rgb` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)>** \[r, g, b] values (0-255)
 
-Returns **any** luminance value between 0-255
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** luminance value (0-255)
 
 ### map
 
@@ -498,116 +545,129 @@ Normalizes a value between two bounds
 *   `min` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** minimum boundary
 *   `max` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** maximum boundary
 
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** normalized value
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** normalized value (0-1)
 
 ### observable
 
-Creates a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy)
-instance with a `subscribe` method that can be used to respond to state changes
+Creates a reactive proxy with subscribe method for state changes
 
 #### Parameters
 
-*   `initial`  initial state object
-*   `callback`  optional subscribed callback function
+*   `initial` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** initial state object
+*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** optional subscriber called on changes
 
 #### Examples
 
 ```javascript
 const store = observable({count: 0});
-
 const unsubscribe = store.subscribe((newState, oldState, key) => {
   console.log(`${key} changed from ${oldState.count} to ${newState.count}`);
 });
-
 store.count = 10;
 unsubscribe();
 ```
 
-Returns **any** proxied object
+Returns **[Proxy](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy)** proxied object with subscribe method
 
 ### on
 
-Adds an event listener to a target element or array of elements, or creates a delegate listener for the target selector string
+Adds event listeners with optional delegation support
 
 #### Parameters
 
-*   `events` &#x20;
-*   `target`  target element, array of elements or a CSS selector for event delegation
-*   `callback`  callback function
-*   `scope`  optional parent scope (optional, default `document`)
-*   `event`  name of event, or multiple events as either an array or space-separated spring
+*   `events` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>)** event name(s), space-separated or array
+*   `target` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Element](https://developer.mozilla.org/docs/Web/API/Element) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[Element](https://developer.mozilla.org/docs/Web/API/Element)>)** CSS selector (delegation) or element(s)
+*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** event handler
+*   `scope` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** delegation scope (default: document) (optional, default `document`)
 
-Returns **any** function to remove all listeners
+#### Examples
+
+```javascript
+const off = on('click', '.button', handleClick);
+const off = on('mouseenter mouseleave', el, handleHover);
+```
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to remove listeners
 
 ### once
 
-Wraps [on](#on) to create an event listener that will only fire once
+Creates an event listener using [on](#on) that fires only once
 
 #### Parameters
 
-*   `type` &#x20;
-*   `target` &#x20;
-*   `callback` &#x20;
-*   `scope` &#x20;
+*   `type` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>)** event name(s)
+*   `target` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Element](https://developer.mozilla.org/docs/Web/API/Element) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[Element](https://developer.mozilla.org/docs/Web/API/Element)>)** CSS selector or element(s)
+*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** event handler
+*   `scope` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** delegation scope (default: document)
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to remove listener
 
 ### ordinal
 
-Appends the ordinal suffix ('st', 'nd', 'rd', or 'th') to a given number
+Appends ordinal suffix (st, nd, rd, th) to a number
 
 #### Parameters
 
-*   `n` &#x20;
-*   `number` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** input number
+*   `n` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** input number
 
-Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** string with input number and oridinal suffix
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** number with ordinal suffix (e.g., '1st', '2nd', '3rd')
 
 ### PI
 
-Exports `PI`, `TWO_PI` and `HALF_PI` using [Math.PI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/PI) (3.141592653589793)
+Math constants PI, TWO\_PI, and HALF\_PI using [Math.PI](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/PI) (3.141592653589793)
+
+Type: [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)
 
 ### pipe
 
-Creates a function that chains multiple function calls by passing the result from one to the next
+Creates a function that pipes input through multiple functions
 
 #### Parameters
 
-*   `fns` **...any** individual function arguments
+*   `fns` **...[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** functions to chain
 
-Returns **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)**&#x20;
+#### Examples
+
+```javascript
+pipe(trim, lowercase, slugify)('  Hello World  '); // 'hello-world'
+```
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** composed function
 
 ### pledge
 
-Creates an object with a reference to a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that can be resolved or rejected externally (consider using [Promise.withResolvers()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) instead)
+Creates a deferred promise with external resolve/reject
+(consider using [Promise.withResolvers()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) instead)
 
-Returns **any** object with a `resolve` function, a `reject` function and the `promise` instance
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** object with promise, resolve, and reject properties
 
 ### prop
 
-Gets a sets a CSS custom property on an element
+Gets or sets a CSS custom property on an element
 
 #### Parameters
 
-*   `el`  element
-*   `name`  property name
-*   `value`  property value
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element
+*   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** property name (e.g., '--color')
+*   `value` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** value to set (omit to get)
 
-Returns **any** value (if getting) or undefined
+Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** property value when getting
 
 ### random
 
 Multi-purpose random function:
 
-*   if no arguments are passed, returns random float 0-1 from [Math.random()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random)
-*   if an array is passed, returns a random element from the array
-*   if min is passed, returns a random float in the range 0-min
-*   if min and max are passed, returns a random float in the range min-max
+*   no arguments: returns random float 0-1
+*   array: returns random element from the array
+*   min: returns random float in range 0-min
+*   min and max: returns random float in range min-max
 
 #### Parameters
 
-*   `min` &#x20;
-*   `max` &#x20;
+*   `min` **([number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array))** upper bound, or array to pick from
+*   `max` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** upper bound when min is provided
 
-Returns **any** random number or random element from array
+Returns **([number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | any)** random number or random array element
 
 ### rect
 
@@ -615,12 +675,13 @@ Gets the size and position of an element relative to the viewport using [getBoun
 
 #### Parameters
 
-*   `el` &#x20;
-*   `HTMLElement` &#x20;
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element to measure
+
+Returns **DOMRect** bounding client rect
 
 ### request
 
-[fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch) wrapper with some conveniences:
+Fetch wrapper with common defaults and convenience methods
 
 *   defaults to sending `'Content-Type': 'application/json'` headers
 *   defaults to resolving with the returned JSON response or rejecting with `errors` and `status`
@@ -628,82 +689,96 @@ Gets the size and position of an element relative to the viewport using [getBoun
 *   converts the data argument to a JSON string or URL params for `GET` requests
 *   exposes `request.headers` for overriding the default headers
 *   exposes `request.handler` for overriding the default response handler passed to `fetch(...).then(request.handler)`
-*   creates `request[method]()`
+*   creates `request[method]()` helpers
 
 #### Parameters
 
-*   `method`  HTTP method (if calling `request()` directly)
-*   `url`  URL of the resource you want to fetch
-*   `data`  request data to be sent
-*   `options`  [fetch options](https://developer.mozilla.org/en-US/docs/Web/API/fetch#options) (optional, default `{}`)
+*   `method` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** HTTP method
+*   `url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** request URL
+*   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** request data (body or query params for GET)
+*   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** additional fetch options (optional, default `{}`)
 
 #### Examples
 
 ```javascript
 request.get('https://api.example.com/users?limit=10');
-request.get('users', {limit: 10});
-
-request.headers['Authorization'] = `Bearer ${token}`;
+request.get('/users', {limit: 10}); *
 request.post('/login', {username, password});
+request.headers['Authorization'] = `Bearer ${token}`;
 ```
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** promise resolving to JSON response
 
 ### ro
 
-Tracks resize events on the provided element
+Tracks resize events on an element using ResizeObserver
 
 #### Parameters
 
-*   `el`  element to observe
-*   `fn`  function to call when resized, receives a [ResizeObserverEntry](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry)
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** element to observe
+*   `fn` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** callback receiving ResizeObserverEntry
 
-Returns **any** unobserve cleanup function
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to stop observing
 
 ### round
 
-Rounds a value to the specificed number of decimal places
+Rounds a value to the specified number of decimal places
 
 #### Parameters
 
-*   `n`  number to round
-*   `precision`  decimal places (optional, default `2`)
+*   `n` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number to round
+*   `precision` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** decimal places (default: 2) (optional, default `2`)
 
-Returns **any** rounded value
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** rounded value
 
 ### safe
 
-[Async/Await Error Handling](https://wesbos.com/javascript/12-advanced-flow-control/71-async-await-error-handling)
+Wraps an async function with error handling
 
 #### Parameters
 
-*   `fn`  try function
-*   `handler`  catch function
+*   `fn` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** async function to wrap
+*   `handler` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** error handler
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** wrapped function that catches errors
 
 ### settled
 
-[Await Error Handling](https://youtu.be/wsoQ-fgaoyQ)
+Awaits a promise and returns \[value, error] tuple for easier error handling
 
 #### Parameters
 
-*   `promise`  Promise to await
-*   `handler`  optional function to handle the resolved or rejected promise
+*   `promise` **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** promise to await
+*   `handler` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** optional custom result handler
+
+#### Examples
+
+```javascript
+const [data, err] = await settled(fetchUser(id));
+if (err) handleError(err);
+```
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)>** \[value, reason] tuple
 
 ### shuffle
 
-Shuffles an array
+Shuffles an array in place, or returns a random sort comparator
 
 #### Parameters
 
-*   `array`  optional array to be shuffled in place
+*   `array` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** array to shuffle (optional)
 
-Returns **any** shuffled array or a random number to be used as a sort compare
+Returns **([Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array) | [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number))** shuffled array, or random comparator if no array provided
 
 ### slug
 
-Creates a URL-friendly slug version of a string
+Converts a string to a URL-friendly slug
 
 #### Parameters
 
-*   `str` &#x20;
+*   `str` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** string to convert
+
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** lowercase, hyphenated slug
 
 ### svg
 
@@ -711,8 +786,8 @@ Creates SVG elements using template literals
 
 #### Parameters
 
-*   `strings` &#x20;
-*   `vars` **...any**&#x20;
+*   `strings` **TemplateStringsArray** template literal strings
+*   `vars` **...any** template literal values
 
 #### Examples
 
@@ -728,15 +803,24 @@ const circle = svg`
   </svg>`;
 ```
 
+Returns **[SVGElement](https://developer.mozilla.org/docs/Web/SVG/Element/animate)** parsed SVG element
+
 ### throttle
 
-Creates a throttled version of a function which will
-only be called once per the specified wait time
+Creates a throttled function that only invokes once per wait period
 
 #### Parameters
 
-*   `fn`  function to throttle
-*   `wait`  time in milliseconds
+*   `fn` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** function to throttle
+*   `wait` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** minimum time between calls in milliseconds
+
+#### Examples
+
+```javascript
+const throttledFn = throttle(onScroll, 100);
+```
+
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** throttled function
 
 ### toArray
 
@@ -744,24 +828,30 @@ Converts a value to an array
 
 #### Parameters
 
-*   `value` &#x20;
+*   `value` **any** value to convert (NodeList, HTMLCollection, or any value)
+
+Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** array containing the value(s)
 
 ### toBoolean
 
-Converts a value to `true` or `false`
+Converts a value to boolean (handles string values like 'true', 'false', 'yes', 'no')
 
 #### Parameters
 
-*   `value` &#x20;
+*   `value` **any** value to convert
+
+Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** boolean value
 
 ### toJSON
 
-Converts a JSON string to an object or an object to a JSON string
+Converts between JSON strings and objects
 
 #### Parameters
 
-*   `value`  string or object to convert
-*   `defaults`  optional defaults if parsing a string
+*   `value` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object))** string to parse or object to stringify
+*   `defaults` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** default values to merge (when parsing) or extend (when stringifying)
+
+Returns **([Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object) | [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String))** parsed object or JSON string
 
 ### toDegrees
 
@@ -769,9 +859,9 @@ Converts radians to degrees
 
 #### Parameters
 
-*   `radians` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)**&#x20;
+*   `radians` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** angle in radians
 
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** degrees
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** angle in degrees
 
 ### toRadians
 
@@ -779,49 +869,51 @@ Converts degrees to radians
 
 #### Parameters
 
-*   `degrees` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)**&#x20;
+*   `degrees` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** angle in degrees
 
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** radians
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** angle in radians
 
 ### toRGB
 
-Converts a hexidecimal string to an rgb array
+Converts a hex color string to an RGB array
 
 #### Parameters
 
-*   `hex` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** original RRGGBB hex color, with or without the preceeding #
+*   `hex` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** hex color (with or without #)
 
-Returns **[array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** r, g and b values in the range 0-255
+Returns **([Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)> | null)** \[r, g, b] array (0-255) or null if invalid
 
 ### trap
 
-Traps focus on the given element with an optional callback to modify the array of [focusable](#focusables) elements
+Traps focus within an element for keyboard navigation
 
 #### Parameters
 
-*   `el` &#x20;
-*   `callback` &#x20;
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** container element
+*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** optional function to filter/modify focusable elements
 
-Returns **any** function to untrap
+Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to restore previous focus
 
 ### traverse
 
-Recursively passes a DOM element's children to the provided callback
+Walks a DOM tree and calls callback for each node
 
 #### Parameters
 
-*   `el`  root element to travese
-*   `callback`  function to be called for each child element
-*   `filter`  filter passed to [createTreeWalker](https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker) (defaults to `NodeFilter.SHOW_ELEMENT`)
+*   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** root element to traverse
+*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** function called for each node
+*   `filter` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** NodeFilter constant (default: NodeFilter.SHOW\_ELEMENT)
 
 ### uid
 
-Generates a unique base 16 string with an optional prefix or suffix.
+Generates a unique base-16 string ID
 
 #### Parameters
 
-*   `prefix`   (optional, default `''`)
-*   `suffix`   (optional, default `''`)
+*   `prefix` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** optional prefix (optional, default `''`)
+*   `suffix` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** optional suffix (optional, default `''`)
+
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** unique identifier
 
 ### validate
 
@@ -829,8 +921,8 @@ Validates data against a set of rules
 
 #### Parameters
 
-*   `data` &#x20;
-*   `rules` &#x20;
+*   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** data to validate
+*   `rules` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** object of validator functions (return true or error string)
 
 #### Examples
 
@@ -838,7 +930,7 @@ Validates data against a set of rules
 const data = {
   email: 'hello@example.com',
   password: 'password',
-  confirm: null
+  passwordConfirm: null
 };
 
 const rules = {
@@ -849,8 +941,7 @@ const rules = {
     if (!value) return 'Required';
     return value.length >= 8 || 'Must be at least 8 characters';
   },
-  confirm(value, data) {
-    if (!value) return 'Required';
+  passwordConfirm(value, data) {
     return value === data.password || 'Must match your password';
   },
 };
@@ -858,34 +949,36 @@ const rules = {
 const errors = validate(data, rules);
 ```
 
-Returns **any** errors object or null if all keys passed validation
+Returns **([Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object) | null)** errors object, or null if valid
 
 ### wait
 
-Returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-that resolves after the specified delay in milliseconds
+Returns a promise that resolves after a delay
 
 #### Parameters
 
-*   `delay` &#x20;
+*   `delay` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** time in milliseconds
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** promise that resolves after delay
 
 ### worker
 
-Creates a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Worker) instance with the provided `function` or `string`
+Creates a Web Worker from a function or string
 
 #### Parameters
 
-*   `code` &#x20;
+*   `code` **([Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function) | [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String))** worker code as function or string
+
+Returns **[Worker](https://developer.mozilla.org/docs/Web/JavaScript)** Web Worker instance
 
 ### wrap
 
-Wraps an index around the given length using the modulo operator.
+Wraps an index around the given length using the modulo operator
 
 #### Parameters
 
-*   `index` &#x20;
-*   `n` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** length
-*   `i` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** index
+*   `index` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** index to wrap
+*   `n` **([number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array))** length or array
 
 #### Examples
 
@@ -895,4 +988,4 @@ wrap(3, 3);  // 0
 wrap(-1, 3); // 2
 ```
 
-Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** looped index
+Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** wrapped index

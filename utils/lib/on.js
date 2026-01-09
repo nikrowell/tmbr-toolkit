@@ -2,14 +2,17 @@ import { isEmpty } from './isEmpty.js';
 import { isString } from './isString.js';
 
 /**
- * Adds an event listener to a target element or array of elements, or creates a delegate listener for the target selector string
+ * Adds event listeners with optional delegation support
  *
- * @param event    - name of event, or multiple events as either an array or space-separated spring
- * @param target   - target element, array of elements or a CSS selector for event delegation
- * @param callback - callback function
- * @param scope    - optional parent scope
+ * @param {string|string[]} events - event name(s), space-separated or array
+ * @param {string|Element|Element[]} target - CSS selector (delegation) or element(s)
+ * @param {Function} callback - event handler
+ * @param {Element} scope - delegation scope (default: document)
+ * @returns {Function} cleanup function to remove listeners
  *
- * @returns function to remove all listeners
+ * @example
+ * const off = on('click', '.button', handleClick);
+ * const off = on('mouseenter mouseleave', el, handleHover);
  */
 export function on(events, target, callback, scope = document) {
 

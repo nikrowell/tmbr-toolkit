@@ -1,8 +1,9 @@
 /**
- * {@link https://wesbos.com/javascript/12-advanced-flow-control/71-async-await-error-handling Async/Await Error Handling}
+ * Wraps an async function with error handling
  *
- * @param fn      - try function
- * @param handler - catch function
+ * @param {Function} fn - async function to wrap
+ * @param {Function} handler - error handler
+ * @returns {Function} wrapped function that catches errors
  */
 export function safe(fn, handler) {
   return () => fn().catch(handler);

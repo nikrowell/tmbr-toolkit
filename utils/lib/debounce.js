@@ -1,9 +1,13 @@
 /**
- * Creates a debounced version of a function which postpones execution
- * until specified wait time since the function was last invoked
+ * Creates a debounced function that delays invocation until after wait ms have elapsed
+ * since the last call
  *
- * @param fn   - function to debounce
- * @param wait - time in milliseconds
+ * @param {Function} fn - function to debounce
+ * @param {number} wait - delay in milliseconds
+ * @returns {Function} debounced function
+ *
+ * @example
+ * const debouncedFn = debounce(onInput, 300);
  */
 export function debounce(fn, wait) {
   let timeout;

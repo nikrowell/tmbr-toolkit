@@ -1,9 +1,12 @@
 /**
- * Creates a throttled version of a function which will
- * only be called once per the specified wait time
+ * Creates a throttled function that only invokes once per wait period
  *
- * @param fn   - function to throttle
- * @param wait - time in milliseconds
+ * @param {Function} fn - function to throttle
+ * @param {number} wait - minimum time between calls in milliseconds
+ * @returns {Function} throttled function
+ *
+ * @example
+ * const throttledFn = throttle(onScroll, 100);
  */
 export function throttle(fn, wait) {
   let throttled;

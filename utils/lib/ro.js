@@ -1,10 +1,9 @@
 /**
- * Tracks resize events on the provided element
+ * Tracks resize events on an element using ResizeObserver
  *
- * @param el - element to observe
- * @param fn - function to call when resized, receives a {@link https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry ResizeObserverEntry}
- *
- * @return unobserve cleanup function
+ * @param {Element} el - element to observe
+ * @param {Function} fn - callback receiving ResizeObserverEntry
+ * @returns {Function} cleanup function to stop observing
  */
 export function ro(el, fn) {
   const observer = new ResizeObserver(entries => fn(entries[0]));

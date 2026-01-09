@@ -1,7 +1,8 @@
 /**
- * Creates an object with a reference to a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise Promise} that can be resolved or rejected externally (consider using {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers Promise.withResolvers()} instead)
+ * Creates a deferred promise with external resolve/reject
+ * (consider using {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers Promise.withResolvers()} instead)
  *
- * @return object with a `resolve` function, a `reject` function and the `promise` instance
+ * @returns {Object} object with promise, resolve, and reject properties
  */
 export function pledge() {
 

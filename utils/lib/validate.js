@@ -4,16 +4,15 @@ import { isObject } from './isObject.js';
 /**
  * Validates data against a set of rules
  *
- * @param data
- * @param rules
- *
- * @returns errors object or null if all keys passed validation
+ * @param {Object} data - data to validate
+ * @param {Object} rules - object of validator functions (return true or error string)
+ * @returns {Object|null} errors object, or null if valid
  *
  * @example
  * const data = {
  *   email: 'hello@example.com',
  *   password: 'password',
- *   confirm: null
+ *   passwordConfirm: null
  * };
  *
  * const rules = {
@@ -24,8 +23,7 @@ import { isObject } from './isObject.js';
  *     if (!value) return 'Required';
  *     return value.length >= 8 || 'Must be at least 8 characters';
  *   },
- *   confirm(value, data) {
- *     if (!value) return 'Required';
+ *   passwordConfirm(value, data) {
  *     return value === data.password || 'Must match your password';
  *   },
  * };

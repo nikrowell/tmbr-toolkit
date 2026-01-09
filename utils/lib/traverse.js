@@ -1,9 +1,9 @@
 /**
- * Recursively passes a DOM element's children to the provided callback
+ * Walks a DOM tree and calls callback for each node
  *
- * @param el       - root element to travese
- * @param callback - function to be called for each child element
- * @param filter   - filter passed to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker createTreeWalker} (defaults to `NodeFilter.SHOW_ELEMENT`)
+ * @param {Element} el - root element to traverse
+ * @param {Function} callback - function called for each node
+ * @param {number} filter - NodeFilter constant (default: NodeFilter.SHOW_ELEMENT)
  */
 export function traverse(el, callback, filter) {
   const walker = document.createTreeWalker(el, filter || NodeFilter.SHOW_ELEMENT);

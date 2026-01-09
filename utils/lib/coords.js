@@ -1,13 +1,11 @@
 import { isElement } from './isElement.js';
 
 /**
- * Gets the x and y coordinates of a pointer event,
- * optionally relative to a target element
+ * Gets x and y coordinates from a pointer event, optionally relative to a target element
  *
- * @param event  - event object
- * @param target - optional target element
- *
- * @return object with x and y properties
+ * @param {Event} event - mouse or touch event
+ * @param {Element} target - optional element for relative coordinates
+ * @returns {Object} object with x, y (and px, py percentages if target provided)
  */
 export function coords(event, target) {
 

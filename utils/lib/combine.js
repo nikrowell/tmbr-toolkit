@@ -1,9 +1,10 @@
 import { isFunction } from './isFunction.js';
 
 /**
- * Combines functions into a single callback
+ * Combines multiple functions into a single callback that calls all of them
  *
- * @param fns - individual function arguments
+ * @param {...Function} fns - functions to combine
+ * @returns {Function} combined function
  */
 export function combine(...fns) {
   return (...args) => fns.forEach(fn => isFunction(fn) && fn(...args));

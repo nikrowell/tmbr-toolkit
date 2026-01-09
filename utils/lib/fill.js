@@ -1,12 +1,11 @@
 import { isFunction } from './isFunction.js';
 
 /**
- * Fills an array of a specified length using a callback or value
+ * Creates an array of specified length filled with values
  *
- * @param n     - length of array
- * @param value - single value or callback that should return the value for the given index
- *
- * @return {array}
+ * @param {number} n - array length
+ * @param {*|Function} value - fill value, or function receiving index
+ * @returns {Array} filled array
  */
 export function fill(n, value) {
 	const fn = isFunction(value) ? (undef, i) => value(i) : () => value;

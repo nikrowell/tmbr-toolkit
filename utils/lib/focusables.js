@@ -1,6 +1,7 @@
 /**
- * Exports an array of CSS selectors for elements that can receive focus
- * (based on {@link https://github.com/KittyGiraudel/focusable-selectors focusable-selectors})
+ * Array of CSS selectors for focusable elements based on {@link https://github.com/KittyGiraudel/focusable-selectors focusable-selectors}
+ *
+ * @type {string[]}
  */
 export const focusables = /* @__PURE__ */ (() => {
 

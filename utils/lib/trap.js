@@ -4,9 +4,11 @@ import { isFunction } from './isFunction.js';
 import { wrap } from './wrap.js';
 
 /**
- * Traps focus on the given element with an optional callback to modify the array of [focusable](#focusables) elements
+ * Traps focus within an element for keyboard navigation
  *
- * @return function to untrap
+ * @param {Element} el - container element
+ * @param {Function} callback - optional function to filter/modify focusable elements
+ * @returns {Function} cleanup function to restore previous focus
  */
 export function trap(el, callback) {
 

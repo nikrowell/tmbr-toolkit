@@ -1,9 +1,8 @@
 /**
- * Converts a hexidecimal string to an rgb array
+ * Converts a hex color string to an RGB array
  *
- * @param  {string} hex - original RRGGBB hex color, with or without the preceeding #
- *
- * @return {array} r, g and b values in the range 0-255
+ * @param {string} hex - hex color (with or without #)
+ * @returns {number[]|null} [r, g, b] array (0-255) or null if invalid
  */
 export function toRGB(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

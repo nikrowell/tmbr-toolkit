@@ -1,7 +1,10 @@
 import { isFunction } from './isFunction.js';
 
 /**
- * Creates a {@link https://developer.mozilla.org/en-US/docs/Web/API/Worker Web Worker} instance with the provided `function` or `string`
+ * Creates a Web Worker from a function or string
+ *
+ * @param {Function|string} code - worker code as function or string
+ * @returns {Worker} Web Worker instance
  */
 export function worker(code) {
   if (isFunction(code)) {

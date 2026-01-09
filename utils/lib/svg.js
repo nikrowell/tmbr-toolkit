@@ -1,6 +1,10 @@
 /**
  * Creates SVG elements using template literals
  *
+ * @param {TemplateStringsArray} strings - template literal strings
+ * @param {...*} vars - template literal values
+ * @returns {SVGElement} parsed SVG element
+ *
  * @example
  * const square = svg`
  *   <svg viewBox="0 0 100 100">

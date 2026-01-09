@@ -1,10 +1,13 @@
 /**
- * Creates DOM elements using template literals
- * (based on {@link https://www.npmjs.com/package/facon facon}))
+ * Creates DOM elements using template literals, inspired by {@link https://www.npmjs.com/package/facon facon}
+ *
+ * @param {TemplateStringsArray} strings - template literal strings
+ * @param {...*} vars - template literal values (strings, elements, or arrays)
+ * @returns {Element|DocumentFragment} single element or fragment if multiple root nodes
  *
  * @example
- * const img = html`<img src="https://placehold.co/600x400" alt="">`;
- * const div = html`<div>${img}</div>`;
+ * const img = html`<img src="/image.jpg" alt="">`;
+ * const list = html`<ul>${items.map(i => html`<li>${i}</li>`)}</ul>`;
  */
 export function html(strings, ...vars) {
 

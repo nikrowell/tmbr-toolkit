@@ -1,6 +1,8 @@
 /**
- * Efficiently clears the DOM tree from the target element by removing all children,
- * which is can be significantly faster than using `innerHTML`
+ * Removes all children from an element (can be significantly faster than `innerHTML`)
+ *
+ * @param {Element} el - element to empty
+ * @returns {Element} the emptied element for chaining
  *
  * @example
  * const div = document.querySelector('.example');

@@ -1,9 +1,11 @@
 /**
- * Creates a function that chains multiple function calls by passing the result from one to the next
+ * Creates a function that pipes input through multiple functions
  *
- * @param fns - individual function arguments
+ * @param {...Function} fns - functions to chain
+ * @returns {Function} composed function
  *
- * @return {function}
+ * @example
+ * pipe(trim, lowercase, slugify)('  Hello World  '); // 'hello-world'
  */
 export function pipe(...fns) {
   return input => fns.reduce((result, fn) => fn(result), input);

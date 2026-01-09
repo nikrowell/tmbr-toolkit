@@ -1,11 +1,10 @@
 /**
- * Gets a sets a CSS custom property on an element
+ * Gets or sets a CSS custom property on an element
  *
- * @param el    - element
- * @param name  - property name
- * @param value - property value
- *
- * @returns value (if getting) or undefined
+ * @param {Element} el - element
+ * @param {string} name - property name (e.g., '--color')
+ * @param {string} value - value to set (omit to get)
+ * @returns {string|undefined} property value when getting
  */
 export function prop(el, name, value) {
   if (arguments.length < 3) {

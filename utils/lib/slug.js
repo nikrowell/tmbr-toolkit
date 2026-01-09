@@ -1,5 +1,8 @@
 /**
- * Creates a URL-friendly slug version of a string
+ * Converts a string to a URL-friendly slug
+ *
+ * @param {string} str - string to convert
+ * @returns {string} lowercase, hyphenated slug
  */
 export function slug(str) {
   return str.toString().toLowerCase()

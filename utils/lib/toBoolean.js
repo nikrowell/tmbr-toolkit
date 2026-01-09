@@ -2,7 +2,10 @@ import { isBoolean } from './isBoolean.js';
 import { isString } from './isString.js';
 
 /**
- * Converts a value to `true` or `false`
+ * Converts a value to boolean (handles string values like 'true', 'false', 'yes', 'no')
+ *
+ * @param {*} value - value to convert
+ * @returns {boolean} boolean value
  */
 export function toBoolean(value) {
 

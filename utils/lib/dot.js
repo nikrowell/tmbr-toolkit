@@ -1,13 +1,16 @@
 import { isObject } from './isObject.js';
 
 /**
- * Gets or sets a dot-notated path within a nested object
+ * Gets or sets a value at a dot-notated path within a nested object
  *
- * @param object - target object
- * @param path   - string path
- * @param value  - optional value to set
+ * @param {Object} object - target object
+ * @param {string} path - dot-notated path (e.g., 'a.b.c')
+ * @param {*} value - value to set (omit to get)
+ * @returns {*} nested value when getting, or object when setting
  *
- * @returns target object if setting or nested value if getting
+ * @example
+ * dot(obj, 'user.name');        // get
+ * dot(obj, 'user.name', 'Nik'); // set
  */
 export function dot(object, path, value) {
   return arguments.length === 3 ? set(object, path, value) : get(object, path);

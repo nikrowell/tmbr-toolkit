@@ -1,5 +1,8 @@
 /**
  * Converts a value to an array
+ *
+ * @param {*} value - value to convert (NodeList, HTMLCollection, or any value)
+ * @returns {Array} array containing the value(s)
  */
 export function toArray(value) {
   return (

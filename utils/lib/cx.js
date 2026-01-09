@@ -5,7 +5,15 @@ import { isArray } from './isArray.js';
 
 /**
  * Conditionally toggles classes on an element or generates a string of classes,
- * similar to {@link https://www.npmjs.com/package/classnames classnames})
+ * similar to {@link https://www.npmjs.com/package/classnames classnames}
+ *
+ * @param {Element} el - optional element to modify
+ * @param {...(string|Object|Array)} args - class names, objects, or arrays
+ * @returns {string|DOMTokenList} class string, or classList if element passed with no args
+ *
+ * @example
+ * cx('a', {'b': false, 'c': true}, [null && 'd', 'e']); // 'a c e'
+ * cx(el, 'active', {'visible': isVisible});
  */
 export function cx(...args) {
 

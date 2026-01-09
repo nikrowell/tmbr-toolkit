@@ -3,15 +3,15 @@ import { isString } from './isString.js';
 import { ordinal } from './ordinal.js';
 
 /**
- * Formats a date according to the specified pattern
+ * Formats a date according to a pattern string
+ *
+ * @param {string} pattern - format pattern (YYYY, MM, DD, HH, mm, ss, etc.)
+ * @param {Date|string|number} date - date to format (default: now)
+ * @returns {string} formatted date string
  *
  * @example
- * format('DDDD, MMMM Do, YYYY [at] h:mm a');
- *
- * @param pattern - string of tokens
- * @param date    - optional date object, string or timestamp (defaults to the current time)
- *
- * @return formatted date string
+ * format('MMMM Do, YYYY');        // 'January 1st, 2024'
+ * format('YYYY-MM-DD', someDate); // '2024-01-01'
  */
 export function format(pattern, date) {
   if (isNumber(date)) date = new Date(date);

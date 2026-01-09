@@ -3,11 +3,10 @@ import { isBoolean } from './isBoolean.js';
 /**
  * Gets, sets or removes an attribute from an element
  *
- * @param el    - element
- * @param name  - attribute name
- * @param value - attribute value
- *
- * @returns value (if getting) or undefined
+ * @param {Element} el - element
+ * @param {string} name - attribute name
+ * @param {string|boolean} value - attribute value (falsy to remove)
+ * @returns {string|undefined} attribute value when getting
  */
 export function attr(el, name, value) {
   if (arguments.length < 3) {

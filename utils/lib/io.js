@@ -1,12 +1,17 @@
 import { isFunction } from './isFunction.js';
 
 /**
- * Tracks enter and leave events on the provided element
+ * Tracks enter and leave events on an element using IntersectionObserver
  *
- * @param el      - element to observe
- * @param options - object with optional `enter` and `leave` callbacks, `once` boolean and `...rest` args passed to the underlying {@link https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver IntersectionObserver}
+ * @param {Element} el - element to observe
+ * @param {Object} options - enter/leave callbacks, once boolean, and IntersectionObserver options
+ * @returns {Function} cleanup function to stop observing
  *
- * @return unobserve cleanup function
+ * @example
+ * const unobserve = io(el, {
+ *   enter: () => console.log('enter'),
+ *   leave: () => console.log('leave'),
+ * });
  */
 export function io(el, {enter, leave, once = false, ...rest}) {
 

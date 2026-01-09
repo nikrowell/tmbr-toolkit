@@ -1,9 +1,8 @@
 /**
- * Shuffles an array
+ * Shuffles an array in place, or returns a random sort comparator
  *
- * @param array - optional array to be shuffled in place
- *
- * @return shuffled array or a random number to be used as a sort compare
+ * @param {Array} array - array to shuffle (optional)
+ * @returns {Array|number} shuffled array, or random comparator if no array provided
  */
 export function shuffle(array) {
   const rand = () => 0.5 - Math.random();
