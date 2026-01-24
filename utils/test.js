@@ -9,9 +9,10 @@ import {
   dot,
   format,
   html,
-  isObject,
   isElement,
   isEmpty,
+  isIterator,
+  isObject,
   noop,
   observable,
   on,
@@ -20,6 +21,7 @@ import {
   safe,
   settled,
   toJSON,
+  toRelativeTime,
   traverse
 } from './index.js';
 
@@ -171,6 +173,24 @@ test('isEmpty', () => {
   // assert.ok(isEmpty(Symbol('abc')));
 });
 
+test('isIterator', () => {
+  function* gen() { yield 1; }
+  const iterator = gen();
+  const arrayIterator = [1, 2, 3][Symbol.iterator]();
+
+  assert.ok(isIterator(iterator));
+  assert.ok(isIterator(arrayIterator));
+  assert.ok(isIterator({next: () => {}}));
+
+  assert.not.ok(isIterator(null));
+  assert.not.ok(isIterator(undefined));
+  assert.not.ok(isIterator({}));
+  assert.not.ok(isIterator([]));
+  assert.not.ok(isIterator('string'));
+  assert.not.ok(isIterator(42));
+  assert.not.ok(isIterator({next: 'not a function'}));
+});
+
 test('isObject', () => {
   assert.ok(isObject({}));
   assert.not.ok(isObject());
@@ -300,6 +320,23 @@ test('toJSON', () => {
   // object to string
   const string = '{"string":"Hello World","number":44,"nope":null,"yes":true,"no":false,"name":"Nik"}';
   assert.equal(toJSON(a, {number: 44, name: 'Nik'}), string);
+});
+
+test('toRelativeTime', () => {
+  const now = Date.now();
+  assert.is(toRelativeTime(new Date(now - 60 * 1000)), '1 minute ago');
+  assert.is(toRelativeTime(null), null);
+  assert.is(toRelativeTime(undefined), null);
+  assert.is(toRelativeTime('invalid'), null);
+  assert.is(toRelativeTime(Infinity), null);
+  // past
+  assert.is(toRelativeTime(now - 30 * 1000), '30 seconds ago');
+  assert.is(toRelativeTime(now - 5 * 60 * 1000), '5 minutes ago');
+  assert.is(toRelativeTime(now - 3 * 60 * 60 * 1000), '3 hours ago');
+  assert.is(toRelativeTime(now - 2 * 24 * 60 * 60 * 1000), '2 days ago');
+  // future
+  assert.is(toRelativeTime(now + 45 * 1000), 'in 45 seconds');
+  assert.is(toRelativeTime(now + 10 * 60 * 1000), 'in 10 minutes');
 });
 
 test('traverse', () => {
