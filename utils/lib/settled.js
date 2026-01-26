@@ -3,11 +3,10 @@
  *
  * @param {Promise} promise - promise to await
  * @param {Function} handler - optional custom result handler
- * @returns {Promise<Array>} [value, reason] tuple
+ * @returns {Promise<Array>} [value, error] array
  *
  * @example
- * const [data, err] = await settled(fetchUser(id));
- * if (err) handleError(err);
+ * const [ value, error ] = await settled(fetch(...));
  */
 export function settled(promise, handler) {
   handler ??= ({value, reason}) => [value, reason];

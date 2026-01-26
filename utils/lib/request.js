@@ -44,7 +44,8 @@ function req(method, url, data, options = {}) {
 }
 
 const headers = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
 };
 
 const handler = res => new Promise((resolve, reject) => {
