@@ -9,9 +9,10 @@ import { only } from './only.js';
  * @returns {Array} array of values when key is a string, or array of objects when key is an array
  *
  * @example
- * pluck(users, 'name')                // ['John', 'Jane']
- * pluck(users, ['name', 'email'])     // [{name: 'John', email: '...'}, {name: 'Jane', email: '...'}]
- * pluck(users, ['name', 'stats.age']) // [{name: 'John', age: 45}, {name: 'Jane', age: 32}]
+ * pluck(users, 'name')                      // ['John', 'Jane']
+ * pluck(users, ['name', 'email'])           // [{name: 'John', email: '...'}, {name: 'Jane', email: '...'}]
+ * pluck(users, ['name', 'stats.age'])       // [{name: 'John', age: 45}, {name: 'Jane', age: 39}]
+ * pluck(users, ['name', 'stats.age:years']) // [{name: 'John', years: 45}, {name: 'Jane', years: 39}]
  */
 export function pluck(array, key) {
   return isArray(key) ? array.map(item => only(item, key)) : array.map(item => item[key]);

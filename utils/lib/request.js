@@ -1,7 +1,7 @@
 /**
  * Fetch wrapper with common defaults and convenience methods
  *
- * - defaults to sending `'Content-Type': 'application/json'` headers
+ * - defaults to sending `'Content-Type': 'application/json'` and `'Accept': 'application/json'` headers
  * - defaults to resolving with the returned JSON response or rejecting with `errors` and `status`
  * - prefixes relative URLs with a preceeding slash
  * - converts the data argument to a JSON string or URL params for `GET` requests
@@ -44,7 +44,8 @@ function req(method, url, data, options = {}) {
 }
 
 const headers = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
 };
 
 const handler = res => new Promise((resolve, reject) => {
