@@ -16,8 +16,10 @@ import {
   noop,
   observable,
   on,
+  only,
   ordinal,
   pipe,
+  pluck,
   safe,
   settled,
   toJSON,
@@ -174,7 +176,7 @@ test('isEmpty', () => {
 });
 
 test('isIterator', () => {
-  function* gen() { yield 1; }
+  function* gen() { yield 1 }
   const iterator = gen();
   const arrayIterator = [1, 2, 3][Symbol.iterator]();
 
@@ -264,6 +266,38 @@ test('on', () => {
   assert.ok(callback.calledOnce);
 });
 
+test('only', () => {
+
+  const fields = {
+    name: {
+      first: 'John',
+      last: 'Smith'
+    },
+    stats: {
+      age: 45,
+      weight: 150,
+      height: 68,
+    },
+    email: 'john@example.com',
+    password: 'password',
+  };
+
+  assert.equal(only(fields, 'email'), {email: 'john@example.com'});
+  assert.equal(only(fields, 'name.first:firstName'), {firstName: 'John'});
+  assert.equal(only(fields, ['name.first', 'email']), {first: 'John', email: 'john@example.com'});
+  assert.equal(only(fields, ['name.first', 'stats.age:years']), {first: 'John', years: 45});
+  assert.equal(only(fields, ['name.first:name', 'nonexistent']), {name: 'John'});
+  assert.equal(only(fields, 'stats.nonexistent'), {});
+  assert.equal(only(fields, 'stats.age'), {age: 45});
+  assert.equal(only(fields, 'stats.age:years'), {years: 45});
+  assert.equal(only(fields, ['stats.age', 'stats.weight']), {age: 45, weight: 150});
+  assert.equal(only(fields, []), {});
+
+  const deep = {a: {b: {c: 'value'}}};
+  assert.equal(only(deep, 'a.b.c'), {c: 'value'});
+  assert.equal(only(deep, 'a.b.c:deep'), {deep: 'value'});
+});
+
 test('ordinal', () => {
   assert.equal(ordinal(1), '1st');
   assert.equal(ordinal(2), '2nd');
@@ -282,6 +316,36 @@ test('pipe', () => {
     value => `${value}!`
   );
   assert.equal(fn('Hello, World?'), 'HELLOWORLD!');
+});
+
+test('pluck', () => {
+
+  const users = [
+    {name: 'John', email: 'john@example.com', stats: {age: 45}},
+    {name: 'Jane', email: 'jane@example.com', stats: {age: 39}},
+  ];
+
+  // single key returns array of values
+  assert.equal(pluck(users, 'name'), ['John', 'Jane']);
+  assert.equal(pluck(users, 'email'), ['john@example.com', 'jane@example.com']);
+
+  // array of keys returns array of objects via only()
+  assert.equal(pluck(users, ['name', 'email']), [
+    {name: 'John', email: 'john@example.com'},
+    {name: 'Jane', email: 'jane@example.com'},
+  ]);
+
+  // supports dot notation via only()
+  assert.equal(pluck(users, ['name', 'stats.age']), [
+    {name: 'John', age: 45},
+    {name: 'Jane', age: 39},
+  ]);
+
+  // supports renaming via only()
+  assert.equal(pluck(users, ['name', 'stats.age:years']), [
+    {name: 'John', years: 45},
+    {name: 'Jane', years: 39},
+  ]);
 });
 
 test('safe', async () => {

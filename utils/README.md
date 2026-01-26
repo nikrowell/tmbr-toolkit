@@ -50,6 +50,7 @@ Breaking changes introduced in version `2.0.0`:
 *   [isElement](#iselement)
 *   [isEmpty](#isempty)
 *   [isFunction](#isfunction)
+*   [isIterator](#isiterator)
 *   [isNumber](#isnumber)
 *   [isNumeric](#isnumeric)
 *   [isObject](#isobject)
@@ -62,11 +63,13 @@ Breaking changes introduced in version `2.0.0`:
 *   [normalize](#normalize)
 *   [observable](#observable)
 *   [on](#on)
+*   [only](#only)
 *   [once](#once)
 *   [ordinal](#ordinal)
 *   [PI](#pi)
 *   [pipe](#pipe)
 *   [pledge](#pledge)
+*   [pluck](#pluck)
 *   [prop](#prop)
 *   [random](#random)
 *   [rect](#rect)
@@ -84,6 +87,7 @@ Breaking changes introduced in version `2.0.0`:
 *   [toJSON](#tojson)
 *   [toDegrees](#todegrees)
 *   [toRadians](#toradians)
+*   [toRelativeTime](#torelativetime)
 *   [toRGB](#torgb)
 *   [trap](#trap)
 *   [traverse](#traverse)
@@ -455,6 +459,14 @@ Checks if a value is a function
 
 *   `value` &#x20;
 
+### isIterator
+
+Checks if a value is an iterator (has a next method)
+
+#### Parameters
+
+*   `value` &#x20;
+
 ### isNumber
 
 Checks if a value is a number
@@ -589,6 +601,27 @@ const off = on('mouseenter mouseleave', el, handleHover);
 
 Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to remove listeners
 
+### only
+
+Extracts specified keys from an object, with support for dot notation and renaming
+
+#### Parameters
+
+*   `object` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** source object to extract from
+*   `keys` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>)** key(s) to extract (supports dot notation and colon renaming)
+
+#### Examples
+
+```javascript
+only(obj, 'name');                      // {name: 'John'}
+only(obj, ['name', 'email']);           // {name: 'John', email: 'john@example.com'}
+only(obj, 'stats.age');                 // {age: 45}
+only(obj, 'stats.age:years');           // {years: 45}
+only(obj, ['name', 'stats.age:years']); // {name: 'John', years: 45}
+```
+
+Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** new object with only the specified keys
+
 ### once
 
 Creates an event listener using [on](#on) that fires only once
@@ -640,6 +673,25 @@ Creates a deferred promise with external resolve/reject
 (consider using [Promise.withResolvers()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) instead)
 
 Returns **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** object with promise, resolve, and reject properties
+
+### pluck
+
+Extracts a property value from each item in an array, or multiple properties using [only](#only)
+
+#### Parameters
+
+*   `array` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** array of objects to pluck from
+*   `key` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>)** property name or array of keys (supports dot notation and colon renaming via [only](#only))
+
+#### Examples
+
+```javascript
+pluck(users, 'name')                // ['John', 'Jane']
+pluck(users, ['name', 'email'])     // [{name: 'John', email: '...'}, {name: 'Jane', email: '...'}]
+pluck(users, ['name', 'stats.age']) // [{name: 'John', age: 45}, {name: 'Jane', age: 32}]
+```
+
+Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** array of values when key is a string, or array of objects when key is an array
 
 ### prop
 
@@ -872,6 +924,16 @@ Converts degrees to radians
 *   `degrees` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** angle in degrees
 
 Returns **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** angle in radians
+
+### toRelativeTime
+
+Formats a date or timestamp as a relative time string (e.g., "2 days ago", "in 3 hours")
+
+#### Parameters
+
+*   `value` **([Date](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date) | [number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number))** Date object or timestamp in milliseconds
+
+Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | null)** relative time string, or null if value is invalid
 
 ### toRGB
 
