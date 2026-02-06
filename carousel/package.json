@@ -1,0 +1,17 @@
+{
+  "name": "@tmbr/carousel",
+  "version": "1.0.0",
+  "repository": "github:nikrowell/tmbr-toolkit",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "start": "npx esbuild index.js --outdir=. --servedir=. --format=esm --bundle --watch"
+  },
+  "dependencies": {
+    "@tmbr/utils": "^2.13.1",
+    "embla-carousel": "^8.6.0"
+  }
+}

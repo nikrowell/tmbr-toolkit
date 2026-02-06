@@ -2,6 +2,10 @@
 
 An extension of [Embla Carousel](https://www.embla-carousel.com/) that adds options for adding previous, next and pagination functionality.
 
+```bash
+npm install @tmbr/carousel
+```
+
 ## Differences from Embla
 
 The primary difference from Embla is the first argument, which expects a parent DOM element vs the target carousel element. This is used as the default context for finding the carousel, previous, next and pagination dots elements. Note that `aria-label` attributes will automatically be added where needed.
@@ -50,7 +54,7 @@ There are four custom options in addition to what [Embla Carousel](https://www.e
 | `prev` | `String` or `Element` | CSS selector or DOM element. Defaults to `[data-carousel-prev]` |
 | `next` | `String` or `Element` | CSS selector or DOM element. Defaults to `[data-carousel-next]` |
 
-These can be overriden on a per-instance basis:
+These can be overridden on a per-instance basis:
 
 ```js
 const root = document.getElementById('example');
@@ -58,7 +62,7 @@ const root = document.getElementById('example');
 const carousel = new Carousel(root, {
   node: '.carousel > :first-child',
   prev: '.carousel-prev',
-  prev: '.carousel-next',
+  next: '.carousel-next',
   dots: '.carousel-dots',
 });
 ```
@@ -73,9 +77,23 @@ Carousel.options = {
 };
 ```
 
+Embla options can also be passed as JSON via a `data-carousel` attribute on the root element:
+
+```html
+<div id="example" data-carousel='{"loop": true}'>
+  ...
+</div>
+```
+
 ## Plugins
 
-This carousel automatically uses the [Class Names](https://www.embla-carousel.com/plugins/class-names/) plugin with the default settings, meant to be paired with the utility classes below. Additional plugins can be passed in as a third argument, or overridden globally via the `Carousel.plugins` array.
+[Embla plugins](https://www.embla-carousel.com/plugins/) can be added globally via the `Carousel.plugins` array:
+
+```js
+import ClassNames from 'embla-carousel-class-names';
+
+Carousel.plugins = [ClassNames()];
+```
 
 ```css
 .is-draggable { cursor: grab }
@@ -84,8 +102,26 @@ This carousel automatically uses the [Class Names](https://www.embla-carousel.co
 
 ## Properties
 
-All of Embla's [methods](https://www.embla-carousel.com/api/methods/) are proxied, however, if you need to access the Embla instance it is available via `carousel.embla`. There are also two conveinece properties that access underlying Embla methods:
+All of Embla's [methods](https://www.embla-carousel.com/api/methods/) are proxied, so you can call them directly on the carousel instance. The underlying Embla instance is also available via `carousel.embla`. There are two convenience properties:
 
-* `carousel.slides` = `embla.slideNodes()`
-* `carousel.index` = `embla.selectedScrollSnap()`
+* `carousel.slides` — `embla.slideNodes()`
+* `carousel.index` — `embla.selectedScrollSnap()`
+
+## Accessibility
+
+The following ARIA attributes are managed automatically:
+
+* `aria-label` on the carousel root (`"Carousel, N slides"`) and dot buttons (`"Slide X of N"`)
+* `aria-current` on the active dot button
+* `aria-disabled` on prev/next buttons when at scroll boundaries
+
+## Events
+
+Use Embla's `on` method to listen for events:
+
+```js
+carousel.on('select', () => {
+  console.log('Current slide:', carousel.index);
+});
+```
 

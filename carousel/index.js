@@ -1,33 +1,31 @@
 import Embla from 'embla-carousel';
-import EmblaClassNames from 'embla-carousel-class-names';
-import { isString, isEmpty, findOne, findAll, attr, bind, fill, html } from '@tmbr/utils';
+import { isString, isEmpty, findOne, findAll, toJSON, attr, bind, fill, html } from '@tmbr/utils';
 
 class Carousel {
 
-  constructor(root, options = {}, plugins = []) {
+  constructor(el, options = {}) {
 
     bind(this, ['select']);
+    this.el = el;
 
     const {
-      node = Carousel.options.node || '[data-carousel-node]',
-      dots = Carousel.options.dots || '[data-carousel-dots]',
-      prev = Carousel.options.next || '[data-carousel-prev]',
-      next = Carousel.options.next || '[data-carousel-next]',
-      ...rest
+      node = Carousel.options.node ?? '[data-carousel-node]',
+      dots = Carousel.options.dots ?? '[data-carousel-dots]',
+      prev = Carousel.options.prev ?? '[data-carousel-prev]',
+      next = Carousel.options.next ?? '[data-carousel-next]',
+      ...passed
     } = options;
 
-    this.embla = new Embla(this.#find(node, root) || root.firstElementChild, {
+    this.embla = new Embla(this.#find(node) || el.firstElementChild, {
       ...Carousel.options,
-      ...rest
-    }, [
-      ...Carousel.plugins,
-      ...plugins
-    ]);
+      ...passed,
+      ...toJSON(el.dataset.carousel)
+    }, Carousel.plugins);
 
     this.#init({
-      dots: this.#find(dots, root),
-      prev: this.#find(prev, root),
-      next: this.#find(next, root),
+      dots: this.#find(dots),
+      prev: this.#find(prev),
+      next: this.#find(next),
     });
 
     return new Proxy(this, {
@@ -56,38 +54,41 @@ class Carousel {
       dot.addEventListener('click', () => this.embla.scrollTo(i));
     });
 
-    this.embla.on('select', this.select);
-    this.select();
-
     if (prev) {
+      this.prev = prev;
+      this.prev.addEventListener('click', this.embla.scrollPrev);
       attr(prev, 'aria-label', 'Previous Slide');
-      prev.addEventListener('click', this.embla.scrollPrev);
     }
 
     if (next) {
+      this.next = next;
+      this.next.addEventListener('click', this.embla.scrollNext);
       attr(next, 'aria-label', 'Next Slide');
-      next.addEventListener('click', this.embla.scrollNext);
     }
+
+    this.embla.on('select', this.select);
+    this.select();
   }
 
-  #find(el, root) {
-    return isString(el) ? findOne(el, root) : el;
+  #find(el) {
+    return isString(el) ? findOne(el, this.el) : el;
   }
 
   select() {
     const current = this.index;
     this.dots.forEach((dot, i) => attr(dot, 'aria-current', i === current ? 'true' : false));
+    this.prev && attr(this.prev, 'aria-disabled', this.embla.canScrollPrev() ? false : 'true');
+    this.next && attr(this.next, 'aria-disabled', this.embla.canScrollNext() ? false : 'true');
   }
+
 }
 
 Carousel.options = {
   // https://www.embla-carousel.com/api/options/
-  loop: true
 };
 
 Carousel.plugins = [
   // https://www.embla-carousel.com/plugins/
-  EmblaClassNames({inView: null})
 ];
 
 export default Carousel;

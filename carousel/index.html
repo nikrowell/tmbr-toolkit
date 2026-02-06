@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TMBR Carousel</title>
+
+  <style>
+
+  *          { margin: 0; padding: 0; border: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body       { display: flex; font-family: system-ui, sans-serif; }
+  main       { width: min(900px, 90vw); margin: auto; padding: 5vw; }
+  img        { width: 100%; object-fit: cover; }
+  button     { font: inherit; cursor: pointer; }
+
+  /* base styles */
+
+  [data-carousel-node] {
+    overflow: hidden;
+    cursor: grab;
+  }
+  [data-carousel-node] > * {
+    display: flex;
+    touch-action: pan-y pinch-zoom;
+  }
+  [data-carousel-node] > * > * {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  /* demo styles */
+
+  .carousel {
+    position: relative;
+  }
+  .carousel:before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+  }
+  .carousel img {
+    aspect-ratio: 1200 / 800;
+  }
+
+  [data-carousel-prev], [data-carousel-next] {
+    background-color: #F00;
+    position: absolute;
+    top: 50%;
+    width: 3rem;
+    height: 3rem;
+    translate: 0 -50%;
+  }
+  [data-carousel-prev] {
+    left: 1.5rem;
+  }
+  [data-carousel-next] {
+    right: 1.5rem;
+  }
+  [data-carousel-prev][aria-disabled], [data-carousel-next][aria-disabled] {
+    background-color: #CCC;
+    cursor: default;
+  }
+
+  [data-carousel-dots] {
+    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    position: absolute;
+    bottom: 1em;
+    left: 50%;
+    translate: -50%;
+  }
+  [data-carousel-dots] button {
+    width: 1rem;
+    height: 1rem;
+    background-color: #F00;
+  }
+  [data-carousel-dots] button[aria-current] {
+    background-color: #0F0;
+  }
+
+  .carousel + div {
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .carousel + div button {
+    padding: 0.5em 1em;
+  }
+  .carousel + div label {
+    margin-left: 0.5em;
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    user-select: none;
+  }
+
+  body:has([name="debug"]:checked) {
+    overflow-x: hidden;
+  }
+  body:has([name="debug"]:checked) .carousel:before {
+    outline: #F00 2px dotted;
+    outline-offset: 3px;
+  }
+  body:has([name="debug"]:checked) .carousel > * {
+    overflow: visible;
+  }
+
+  </style>
+
+</head>
+<body>
+
+<main>
+
+  <div class="carousel" data-carousel>
+
+    <div data-carousel-node>
+
+      <div>
+        <img src="https://picsum.photos/1200/800?v=1" alt="">
+        <img src="https://picsum.photos/1200/800?v=2" alt="">
+        <img src="https://picsum.photos/1200/800?v=3" alt="">
+        <img src="https://picsum.photos/1200/800?v=4" alt="">
+      </div>
+
+    </div>
+
+    <div data-carousel-dots></div>
+    <!-- <div id="dots"></div> -->
+
+    <button type="button" data-carousel-prev aria-label="Previous Slide"></button>
+    <button type="button" data-carousel-next aria-label="Next Slide"></button>
+
+  </div>
+
+  <div>
+    <button type="button" id="prev">Prev</button>
+    <button type="button" id="next">Next</button>
+    <button type="button" id="destroy">Destroy</button>
+    <label><input type="checkbox" name="debug" /> debug</label>
+  </div>
+
+</main>
+
+<script type="module">
+import Carousel from './index.js';
+
+Carousel.options = {
+  // loop: true
+};
+
+const carousel = new Carousel(document.querySelector('[data-carousel]'), {
+  // prev: document.getElementById('prev'),
+  // next: document.getElementById('next'),
+  // dots: '#carousel-dots',
+});
+
+document.getElementById('prev').onclick = carousel.scrollPrev;
+document.getElementById('next').onclick = carousel.scrollNext;
+document.getElementById('destroy').onclick = carousel.destroy;
+carousel.on('destroy', () => console.log('destroy'));
+
+</script>
+
+</body>
+</html>
