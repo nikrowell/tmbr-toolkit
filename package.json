@@ -3,7 +3,9 @@
   "type": "module",
   "private": true,
   "workspaces": [
+    "carousel",
     "emitter",
+    "shader",
     "store",
     "utils"
   ],
@@ -11,7 +13,9 @@
     "test": "npm-run-all --silent test:*",
     "test:emitter": "node emitter/test.js",
     "test:store": "node store/test.js",
-    "test:utils": "node utils/test.js"
+    "test:utils": "node utils/test.js",
+    "start:carousel": "npm --prefix carousel run start",
+    "start:shader": "npm --prefix shader run start"
   },
   "devDependencies": {
     "jsdom": "^27.0.0",

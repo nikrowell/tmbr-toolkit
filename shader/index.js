@@ -1,8 +1,8 @@
 import Texture from './texture.js';
 
 const vertex = /* glsl */`
-  attribute vec3 position;
-  void main() { gl_Position = vec4(position, 1.0); }
+  attribute vec2 position;
+  void main() { gl_Position = vec4(position, 0.0, 1.0); }
 `
 const fragment = /* glsl */`
   precision highp float;
@@ -50,7 +50,7 @@ export default class {
       let uniform = this.uniforms[key];
       uniform._type = getUniformType(uniform.type);
       uniform._location = gl.getUniformLocation(program, key);
-      uniform._isMatrix = uniform._type.includes('Matrix');
+      uniform._isMatrix = uniform._type?.includes('Matrix');
 
       if (uniform.value instanceof Image || uniform.value instanceof HTMLCanvasElement) {
         uniform._isImage = true;
@@ -97,7 +97,7 @@ export default class {
   update(time) {
     this.raf = requestAnimationFrame(this.update);
     const gl = this.gl;
-    let textureID = 0
+    let textureID = 0;
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -114,6 +114,7 @@ export default class {
 
       let name = gl.getActiveUniform(this.program, i).name;
       let uniform = this.uniforms[name];
+      if (!uniform) continue;
 
       if (uniform._isImage) {
         gl.uniform1i(uniform._location, textureID);
@@ -139,7 +140,7 @@ export default class {
     for (let i = 0; i < n; i++) {
       let name = gl.getActiveUniform(this.program, i).name;
       let uniform = this.uniforms[name];
-      if (uniform._isImage) uniform._value.destroy();
+      if (uniform?._isImage) uniform._value.destroy();
     }
 
     gl.deleteBuffer(this.position.buffer);
@@ -156,8 +157,9 @@ function createShader(gl, type, source) {
   const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
   if (success) return shader;
 
-  console.error(`[Shader] ${type} shader error: ${gl.getShaderInfoLog(shader)}`);
+  const error = gl.getShaderInfoLog(shader);
   gl.deleteShader(shader);
+  throw new Error(`[Shader] ${type} shader error: ${error}`);
 }
 
 function createProgram(gl, vertexShader, fragmentShader) {
@@ -171,8 +173,9 @@ function createProgram(gl, vertexShader, fragmentShader) {
   const success = gl.getProgramParameter(program, gl.LINK_STATUS);
   if (success) return program;
 
-  console.error(`[Shader] program error: ${gl.getProgramInfoLog(program)}`);
+  const error = gl.getProgramInfoLog(program);
   gl.deleteProgram(program);
+  throw new Error(`[Shader] program error: ${error}`);
 }
 
 function getUniformType(type) {

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TMBR Shader</title>
+
+  <style>
+  *      { margin: 0; padding: 0; border: 0; box-sizing: border-box; }
+  body   { min-height: 100%; display: grid; justify-content: center; padding: 1.25em; gap: 1.25em; }
+  canvas { display: block; max-width: 100%; }
+  </style>
+
+</head>
+<body>
+
+<canvas></canvas>
+<canvas></canvas>
+<canvas></canvas>
+<canvas></canvas>
+
+<script type="module">
+import Shader from './index.js';
+
+const canvases = document.querySelectorAll('canvas');
+
+// use default fragment shader and uniforms
+const shader1 = new Shader({canvas: canvases[0]});
+shader1.resize(400, 400);
+shader1.start();
+
+// use image as texture
+const img1 = new Image();
+img1.src = './texture.jpg';
+
+const shader2 = new Shader({
+  canvas: canvases[1],
+  dpr: window.devicePixelRatio,
+  uniforms: {
+    img: {
+      type: 'sampler2D',
+      value: img1,
+      wrapS: 'clamp',
+      flipY: true
+    }
+  },
+  fragment: `
+  precision highp float;
+  uniform vec2 resolution;
+  uniform float time;
+  uniform sampler2D img;
+
+  void main() {
+    vec2 st = gl_FragCoord.xy / resolution.xy;
+    st.x *= resolution.x / resolution.y;
+    st.x += 0.05 * sin(10.0 * st.y + time * 2.0);
+
+    gl_FragColor = texture2D(img, st);
+  }`
+});
+
+shader2.resize(400, 400);
+shader2.start();
+
+// use canvas element as texture
+const ctx = document.createElement('canvas').getContext('2d');
+ctx.canvas.width = 400;
+ctx.canvas.height = 400;
+ctx.fillStyle = '#CCC';
+ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+const shader3 = new Shader({
+  drp: window.devicePixelRatio,
+  canvas: canvases[2],
+  uniforms: {
+    canvas: {
+      type: 'sampler2D',
+      value: ctx.canvas,
+      flipY: true
+    }
+  },
+  fragment: `
+  precision highp float;
+  uniform vec2 resolution;
+  uniform sampler2D canvas;
+
+  void main() {
+    vec2 st = gl_FragCoord.xy / resolution.xy;
+    gl_FragColor = texture2D(canvas, st);
+  }
+  `
+});
+
+shader3.resize(ctx.canvas.width, ctx.canvas.height);
+shader3.start();
+
+function crop(img, width, height, align = {x: 0.5, y: 0.5}) {
+  const ratio = img.width / img.height;
+  const rect = {x: 0, y: 0, width, height};
+
+  if (ratio > (width / height)) {
+    rect.width = img.width * (height / img.height);
+    rect.x = (width - rect.width) * align.x;
+  } else {
+    rect.height = img.height * (width / img.width);
+    rect.y = (height - rect.height) * align.y;
+  }
+
+  return rect;
+}
+
+const img2 = new Image();
+img2.crossOrigin = 'anonymous';
+img2.src = 'https://picsum.photos/1200/800';
+
+img2.onload = function() {
+  const {x, y, width, height} = crop(this, ctx.canvas.width, ctx.canvas.height);
+  ctx.drawImage(this, x, y, width, height);
+  shader3.uniforms.canvas.update();
+};
+
+canvases[3].style.background = 'red';
+const shader4 = new Shader({
+  canvas: canvases[3],
+  attributes: {
+    alpha: true,
+  },
+  fragment: `
+  precision highp float;
+
+  void main() {
+    // blue with 0.5 opacity, will mix with red background and look purple
+    gl_FragColor = vec4(0.0, 0.0, 1.0, 0.5);
+  }`
+});
+
+shader4.resize(ctx.canvas.width, ctx.canvas.height);
+shader4.start();
+
+</script>
+
+</body>
+</html>
