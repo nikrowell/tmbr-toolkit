@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>@tmbr/component</title>
+
+</head>
+<body>
+
+<main class="max-w-2xl my-10 mx-auto px-10 grid gap-5">
+
+  <article class="bg-gray-50 p-6">
+
+    <h2 class="mb-3 text-2xl font-bold">Counter</h2>
+
+    <div class="flex" data-state="{count: 0}">
+      <button @click="count--" class="rounded-r-none" aria-label="Increment" :disabled="count <= 0">-</button>
+      <div :text="count" class="bg-white grid place-content-center font-mono w-12 text-center"></div>
+      <button @click="count++" class="rounded-l-none" aria-label="Decrement">+</button>
+    </div>
+
+  </article>
+
+  <article class="bg-gray-50 p-6">
+
+    <h2 class="mb-3 text-2xl font-bold">Toggle</h2>
+
+    <div class="flex gap-2" data-state="{active: true}">
+      <span class="w-20 grid place-content-center rounded-sm font-semibold text-white text-center select-none" :class="{active: active, inactive: !active}" :text="active ? 'ON' : 'OFF'"></span>
+      <button class="w-30" @click="active = !active" :text="active ? 'Deactivate' : 'Activate'"></button>
+    </div>
+
+  </article>
+
+  <article class="bg-gray-50 p-6" data-state="{index: 0}">
+
+    <h2 class="mb-3 text-2xl font-bold">Tabs</h2>
+
+      <div role="tablist" class="flex gap-2">
+        <button class="rounded-b-none" :class="{'bg-white': index === 0}" role="tab" id="tab-1" aria-controls="tabpanel-1" :aria-selected="index === 0 ? 'true' : 'false'" @click="index = 0">
+          Colorado
+        </button>
+        <button class="rounded-b-none" :class="{'bg-white': index === 1}" role="tab" id="tab-2" aria-controls="tabpanel-2" :aria-selected="index === 1 ? 'true' : 'false'" @click="index = 1">
+          Minnesota
+        </button>
+      </div>
+
+      <div role="tabpanel" id="tabpanel-1" aria-labelledby="tab-1" :hidden="index !== 0" class="p-5 bg-white">
+        <h3 class="text-lg font-semibold mb-2">Colorado</h3>
+        <p>Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus. Vitae curae natoque a, donec nulla conubia in mollis. Sapien pede in tortor, lectus neque.</p>
+      </div>
+
+      <div role="tabpanel" id="tabpanel-2" aria-labelledby="tab-2" :hidden="index !== 1" class="p-5 bg-white">
+        <h3 class="text-lg font-semibold mb-2">Minnesota</h3>
+        <p>Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur. Ullamco incididunt enim eu labore ut. Ut occaecat elit enim do occaecat aliqua laboris.</p>
+      </div>
+
+  </article>
+
+</main>
+
+<script type="module">
+import Component from './index.js';
+document.querySelectorAll('[data-state]').forEach(el => new Component(el));
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+@layer base {
+  button {
+    @apply text-base bg-gray-200 font-medium px-4 py-2 rounded-sm cursor-pointer hover:bg-gray-300 transition-colors;
+  }
+  button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  span.active {
+    @apply bg-green-600;
+  }
+  span.inactive {
+    @apply bg-red-600;
+  }
+}
+</style>
+
+</body>
+</html>

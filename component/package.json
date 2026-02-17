@@ -1,0 +1,17 @@
+{
+  "name": "@tmbr/component",
+  "version": "0.1.0",
+  "repository": "github:nikrowell/tmbr-toolkit",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "bind.js",
+    "index.js"
+  ],
+  "scripts": {
+    "start": "npx esbuild index.js --outdir=. --servedir=. --format=esm --bundle --watch"
+  },
+  "dependencies": {
+    "@tmbr/utils": "^2.13.1"
+  }
+}
