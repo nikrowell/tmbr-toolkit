@@ -66,15 +66,15 @@ new Counter('#counter');
 
 Directives are expressions evaluated with the current state.
 
-| Directive                                | Effect                                                        |
-| ---------------------------------------- | --------------------------------------------------------------|
-| `:text`                                  | sets `textContent`                                            |
-| `:html`                                  | sets `innerHTML`                                              |
-| `:show`                                  | toggles `display: none`                                       |
-| `:value`                                 | sets `.value` on inputs                                       |
-| `:class`                                 | merges classes from a string, array, or `{name: bool}` object |
-| `:disabled`, `:checked`, `:hidden`, etc. | boolean attributes — set when truthy, removed when falsy      |
-| `:attribute`                             | `setAttribute` fallback for any other attribute               |
+| Directive                    | Effect                                                        |
+| -----------------------------| --------------------------------------------------------------|
+| `:text`                      | sets `textContent`                                            |
+| `:html`                      | sets `innerHTML`                                              |
+| `:show`                      | toggles `display: none`                                       |
+| `:value`                     | sets `.value` on inputs                                       |
+| `:class`                     | merges classes from a string, array, or `{name: bool}` object |
+| `:disabled`, `:hidden`, etc. | boolean attributes — set when truthy, removed when falsy      |
+| `:attribute`                 | `setAttribute` fallback for any other attribute               |
 
 ## Events
 

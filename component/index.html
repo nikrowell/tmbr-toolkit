@@ -12,7 +12,7 @@
 
 <main class="max-w-2xl my-10 mx-auto px-10 grid gap-5">
 
-  <article class="bg-gray-50 p-6">
+  <article>
 
     <h2 class="mb-3 text-2xl font-bold">Counter</h2>
 
@@ -60,11 +60,101 @@
 
   </article>
 
+  <article class="bg-gray-50 p-6">
+
+    <h2 class="mb-3 text-2xl font-bold">Form</h2>
+
+    <form id="example" @submit.prevent="submit" data-props="{date: '2026-02-19'}">
+
+        <div class="mb-3">
+          <label for="example-name" class="sr-only">Full Name</label>
+          <input id="example-name" :model="name" type="text" name="name" placeholder="Full Name" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
+        </div>
+
+        <div class="mb-3">
+          <label for="example-age" class="sr-only">Age</label>
+          <input id="example-age" :model="age" type="number" name="age" placeholder="Age" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
+        </div>
+
+        <label class="mb-3 flex gap-2 text-sm select-none">
+          <input :model="agree" type="checkbox" />
+          I agree to the terms of use
+        </label>
+
+        <button type="submit" :disabled="!agree">Submit</button>
+        <div class="mt-3 text-sm text-gray-400" :show="!agree">Hey <span :text="name"></span>, you must agree to the terms to submit</div>
+
+      </form>
+
+    </div>
+
+  </article>
+
+  <div id="counter">
+    <button type="button" @click="dec" :disabled="count <= 0">Remove</button>
+    <span :text="count"></span>
+    <button type="button" @click="inc">Add</button>
+    <span :show="count >= 10">Count is dangerously high</span>
+  </div>
+
 </main>
 
 <script type="module">
 import Component from './index.js';
+
+class Counter extends Component {
+
+  static state = {
+    count: 0
+  };
+
+  init() {
+    console.log('mounted');
+  }
+
+  inc() {
+    this.state.count++;
+  }
+
+  dec() {
+    this.state.count--;
+  }
+
+  update(state) {
+    console.log(`updated: ${state.count}`);
+  }
+}
+
+class Form extends Component {
+
+  static state = {
+    status: 'idle',
+    name: 'John Smith',
+    age: 45,
+    agree: false
+  };
+
+  constructor(el) {
+    super(el);
+    console.log(this.el)
+    console.log(this.dom);
+    console.table(this.props);
+    console.table(this.state);
+  }
+
+  get firstName() {
+    return this.state.name.split(' ')[0];
+  }
+
+  submit(event) {
+    console.log('submit', event.target, this.state);
+  }
+}
+
 document.querySelectorAll('[data-state]').forEach(el => new Component(el));
+new Counter('#counter');
+new Form('#example');
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>

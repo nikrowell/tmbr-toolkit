@@ -357,4 +357,68 @@ test('dispatch event with options', async () => {
   document.body.removeEventListener('bubble', spy.fn);
 });
 
+test(':model text input sets value from state', async () => {
+  const el = create(`<div data-state="{name: 'Nik'}"><input type="text" :model="name" /></div>`);
+  new Component(el);
+  await tick();
+  assert.is(el.querySelector('input').value, 'Nik');
+});
+
+test(':model text input updates state on input event', async () => {
+  const el = create(`<div data-state="{name: ''}"><input :model="name" type="text"></div>`);
+  const c = new Component(el);
+  await tick();
+  const input = el.querySelector('input');
+  input.value = 'Jane';
+  input.dispatchEvent(new window.Event('input'));
+  assert.is(c.state.name, 'Jane');
+});
+
+test(':model checkbox sets checked from state', async () => {
+  const el = create('<div data-state="{active: true}"><input :model="active" type="checkbox"></div>');
+  new Component(el);
+  await tick();
+  assert.ok(el.querySelector('input').checked);
+});
+
+test(':model checkbox updates state on change event', async () => {
+  const el = create('<div data-state="{active: false}"><input :model="active" type="checkbox"></div>');
+  const c = new Component(el);
+  const input = el.querySelector('input');
+  input.checked = true;
+  input.dispatchEvent(new window.Event('change'));
+  assert.is(c.state.active, true);
+});
+
+test(':model number input coerces value to number', async () => {
+  const el = create('<div data-state="{age: 0}"><input :model="age" type="number"></div>');
+  const c = new Component(el);
+  const input = el.querySelector('input');
+  input.value = '25';
+  input.dispatchEvent(new window.Event('input'));
+  assert.is(c.state.age, 25);
+  assert.type(c.state.age, 'number');
+});
+
+test(':model select updates state on change event', async () => {
+  const el = create(`<div data-state="{color: 'red'}"><select :model="color"><option value="red">Red</option><option value="blue">Blue</option></select></div>`);
+  const c = new Component(el);
+  await tick();
+  const select = el.querySelector('select');
+  assert.is(select.value, 'red');
+  select.value = 'blue';
+  select.dispatchEvent(new window.Event('change'));
+  assert.is(c.state.color, 'blue');
+});
+
+test(':model cleans up listener on destroy', async () => {
+  const el = create(`<div data-state="{name: ''}"><input :model="name" type="text"></div>`);
+  const c = new Component(el);
+  c.destroy();
+  const input = el.querySelector('input');
+  input.value = 'after-destroy';
+  input.dispatchEvent(new window.Event('input'));
+  assert.is(c.state.name, '');
+});
+
 test.run();

@@ -40,7 +40,30 @@ export function bindDirective(component, node, attr, expression) {
 
   let apply;
 
-  if (attr === 'text') {
+  if (attr === 'model') {
+
+    const isCheckbox = node.type === 'checkbox';
+    const isRadio = node.type === 'radio';
+    const isNumber = node.type === 'number' || node.type === 'range';
+    const isSelect = node.nodeName === 'SELECT';
+
+    if (isCheckbox) {
+      apply = value => node.checked = !!value;
+    } else if (isRadio) {
+      apply = value => node.checked = node.value === String(value);
+    } else {
+      apply = value => node.value = value ?? '';
+    }
+
+    component.controller ??= new AbortController();
+    const type = (isCheckbox || isRadio || isSelect) ? 'change' : 'input';
+
+    node.addEventListener(type, event => {
+      const value = isCheckbox ? e.target.checked : event.target.value;
+      component.state[expression] = isNumber ? Number(value) : value;
+    }, {signal: component.controller.signal});
+
+  } else if (attr === 'text') {
     apply = value => node.textContent = value;
   } else if (attr === 'html') {
     apply = value => node.innerHTML = value;
