@@ -71,7 +71,8 @@ Directives are expressions evaluated with the current state.
 | `:text`                      | sets `textContent`                                            |
 | `:html`                      | sets `innerHTML`                                              |
 | `:show`                      | toggles `display: none`                                       |
-| `:value`                     | sets `.value` on inputs                                       |
+| `:value`                     | sets `.value` on inputs (one-way)                             |
+| `:model`                     | two-way binding for form elements                             |
 | `:class`                     | merges classes from a string, array, or `{name: bool}` object |
 | `:disabled`, `:hidden`, etc. | boolean attributes — set when truthy, removed when falsy      |
 | `:attribute`                 | `setAttribute` fallback for any other attribute               |
@@ -106,6 +107,28 @@ Elements with a `ref` attribute are collected into `this.dom`. Multiple elements
 </div>
 ```
 
+## Computed
+
+Getters on the subclass expose derived values that are accessible in template expressions and the `update()` hook.
+
+```js
+class Example extends Component {
+
+  static state = {
+    name: 'Jane Doe'
+  };
+
+  get firstName() {
+    return this.state.name.split(' ')[0];
+  }
+}
+```
+
+```html
+<input type="text" :model="name" />
+First name is <span :text="firstName"></span>
+```
+
 ```js
 this.dom.input // input
 this.dom.items // [li, li]
@@ -113,16 +136,16 @@ this.dom.items // [li, li]
 
 ## Instance API
 
-| Property or Method                 | Description                                         |
-| ---------------------------------- | --------------------------------------------------- |
-| `.el`                              | root element                                        |
-| `.dom`                             | child elements collected from `ref` attributes      |
-| `.props`                           | parsed from `data-props` attribute                  |
-| `.state`                           | reactive proxy where changes trigger a rerender     |
-| `.findOne(selector)`               | scoped `querySelector`                              |
-| `.findAll(selector)`               | scoped `querySelectorAll`                           |
-| `.init()`                          | called after constructor — override in subclass     |
-| `.update(state)`                   | called after each render — override in subclass     |
-| `.on(event, target, fn)`           | delegate event listener, cleaned up on `.destroy()` |
-| `.dispatch(type, detail, options)` | dispatches a `CustomEvent` from `.el`               |
-| `.destroy()`                       | removes all listeners and directives                |
+| Property or Method                | Description                                         |
+| --------------------------------- | --------------------------------------------------- |
+| `el`                              | root element                                        |
+| `dom`                             | child elements collected from `ref` attributes      |
+| `props`                           | parsed from `data-props` attribute                  |
+| `state`                           | reactive proxy where changes trigger a rerender     |
+| `findOne(selector)`               | scoped `querySelector`                              |
+| `findAll(selector)`               | scoped `querySelectorAll`                           |
+| `init()`                          | called after constructor — override in subclass     |
+| `update(state)`                   | called after each render — override in subclass     |
+| `on(event, target, fn)`           | delegate event listener, cleaned up on `.destroy()` |
+| `dispatch(type, detail, options)` | dispatches a `CustomEvent` from `.el`               |
+| `destroy()`                       | removes all listeners and directives                |

@@ -402,14 +402,14 @@ test(':model checkbox updates state on change event', async () => {
   assert.is(c.state.active, true);
 });
 
-test(':model number input coerces value to number', async () => {
+test(':model number input casts value to number', async () => {
   const el = create('<div data-state="{age: 0}"><input :model="age" type="number"></div>');
   const c = new Component(el);
   const input = el.querySelector('input');
-  input.value = '25';
+  input.value = '45';
   input.dispatchEvent(new window.Event('input'));
-  assert.is(c.state.age, 25);
   assert.type(c.state.age, 'number');
+  assert.is(c.state.age, 45);
 });
 
 test(':model select updates state on change event', async () => {
@@ -424,16 +424,16 @@ test(':model select updates state on change event', async () => {
 });
 
 test(':model cleans up listener on destroy', async () => {
-  const el = create(`<div data-state="{name: ''}"><input :model="name" type="text"></div>`);
+  const el = create(`<div data-state="{name: 'initial'}"><input :model="name" type="text"></div>`);
   const c = new Component(el);
   c.destroy();
   const input = el.querySelector('input');
-  input.value = 'after-destroy';
+  input.value = 'destroyed';
   input.dispatchEvent(new window.Event('input'));
-  assert.is(c.state.name, '');
+  assert.is(c.state.name, 'initial');
 });
 
-test('class getter accessible in template', async () => {
+test('computed getter accessible in template', async () => {
 
   class Named extends Component {
     static state = { fullName: 'Jane Doe' }
@@ -446,7 +446,21 @@ test('class getter accessible in template', async () => {
   assert.is(el.querySelector('span').textContent, 'Jane');
 });
 
-test('class getter updates when state changes', async () => {
+test('computed getter accessible in update', async () => {
+
+  class Named extends Component {
+    static state = { fullName: 'Jane Doe' }
+    get firstName() { return this.state.fullName.split(' ')[0]; }
+    update(state) { spy.fn(state.firstName); }
+  }
+
+  const el = create('<div></div>');
+  new Named(el);
+  await tick();
+  assert.is(spy.lastCall.arguments[0], 'Jane');
+});
+
+test('computed getter updates when state changes', async () => {
 
   class Named extends Component {
     static state = { fullName: 'Jane Doe' }
@@ -460,20 +474,6 @@ test('class getter updates when state changes', async () => {
   c.state.fullName = 'John Smith';
   await tick();
   assert.is(el.querySelector('span').textContent, 'John');
-});
-
-test('class getter accessible in update', async () => {
-
-  class Named extends Component {
-    static state = { fullName: 'Jane Doe' }
-    get firstName() { return this.state.fullName.split(' ')[0]; }
-    update(state) { spy.fn(state.firstName); }
-  }
-
-  const el = create('<div></div>');
-  new Named(el);
-  await tick();
-  assert.is(spy.lastCall.arguments[0], 'Jane');
 });
 
 test.run();
