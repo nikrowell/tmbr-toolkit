@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": [
     "carousel",
+    "component",
     "emitter",
     "shader",
     "store",
@@ -11,10 +12,12 @@
   ],
   "scripts": {
     "test": "npm-run-all --silent test:*",
+    "test:component": "node component/test.js",
     "test:emitter": "node emitter/test.js",
     "test:store": "node store/test.js",
     "test:utils": "node utils/test.js",
     "start:carousel": "npm --prefix carousel run start",
+    "start:component": "npm --prefix component run start",
     "start:shader": "npm --prefix shader run start"
   },
   "devDependencies": {
