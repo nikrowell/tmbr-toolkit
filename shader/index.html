@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>TMBR Shader</title>
+  <title>@tmbr/shader</title>
 
   <style>
   *      { margin: 0; padding: 0; border: 0; box-sizing: border-box; }
@@ -93,9 +93,6 @@ const shader3 = new Shader({
   `
 });
 
-shader3.resize(ctx.canvas.width, ctx.canvas.height);
-shader3.start();
-
 function crop(img, width, height, align = {x: 0.5, y: 0.5}) {
   const ratio = img.width / img.height;
   const rect = {x: 0, y: 0, width, height};
@@ -121,7 +118,10 @@ img2.onload = function() {
   shader3.uniforms.canvas.update();
 };
 
-canvases[3].style.background = 'red';
+shader3.resize(ctx.canvas.width, ctx.canvas.height);
+shader3.start();
+
+// use alpha attribute
 const shader4 = new Shader({
   canvas: canvases[3],
   attributes: {
@@ -136,7 +136,8 @@ const shader4 = new Shader({
   }`
 });
 
-shader4.resize(ctx.canvas.width, ctx.canvas.height);
+canvases[3].style.background = 'red';
+shader4.resize(400, 400);
 shader4.start();
 
 </script>
