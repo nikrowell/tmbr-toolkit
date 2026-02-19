@@ -50,7 +50,7 @@ export function bindDirective(component, node, attr, expression) {
     if (isCheckbox) {
       apply = value => node.checked = !!value;
     } else if (isRadio) {
-      apply = value => node.checked = node.value === String(value);
+      apply = value => node.checked = node.value === value;
     } else {
       apply = value => node.value = value ?? '';
     }
@@ -73,8 +73,8 @@ export function bindDirective(component, node, attr, expression) {
     const display = node.style.display || '';
     apply = value => node.style.display = value ? display : 'none';
   } else if (attr === 'class') {
-    const classes = node.className.split(' ').filter(Boolean);
-    apply = value => cx(node, ...classes, value);
+    const initial = node.className;
+    apply = value => { node.className = initial; cx(node, value); };
   } else if (BOOLEANS.has(attr)) {
     apply = value => value ? node.setAttribute(attr, '') : node.removeAttribute(attr);
   } else {

@@ -23,21 +23,18 @@ function render(component) {
   const state = component.state;
   const proto = Object.getPrototypeOf(component);
 
-  const ctx = proto !== Component.prototype
-    ? new Proxy(state, {
-        has(target, key) {
-          return Object.getOwnPropertyDescriptor(proto, key)?.get ? true : key in target;
-        },
-        get(target, key, receiver) {
-          const desc = Object.getOwnPropertyDescriptor(proto, key);
-          if (desc?.get) return desc.get.call(component);
-          return Reflect.get(target, key, receiver);
-        }
-      })
-    : state;
+  const context = proto === Component.prototype ? state : new Proxy(state, {
+    has(target, key) {
+      return Object.getOwnPropertyDescriptor(proto, key)?.get ? true : key in target;
+    },
+    get(target, key, receiver) {
+      const d = Object.getOwnPropertyDescriptor(proto, key);
+      return d?.get ? d.get.call(component) : Reflect.get(target, key, receiver);
+    }
+  });
 
-  for (const apply of component.directives) apply(ctx);
-  component.update?.(ctx);
+  for (const apply of component.directives) apply(context);
+  component.update?.(context);
 }
 
 export default class Component {

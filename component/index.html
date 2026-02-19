@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<main class="max-w-2xl my-10 mx-auto px-10 grid gap-10">
+<main class="max-w-xl my-10 mx-auto px-10 grid gap-10">
 
   <article>
 
@@ -40,27 +40,27 @@
     <h2 class="mb-3 text-2xl font-bold">Tabs</h2>
 
     <div role="tablist" class="flex gap-2">
-      <button class="rounded-b-none" :class="[index === 0 ? 'bg-gray-100' : 'bg-gray-400']" role="tab" id="tab-1" aria-controls="tabpanel-1" :aria-selected="index === 0 ? 'true' : 'false'" @click="index = 0">
+      <button class="rounded-b-none" :class="[index === 0 ? 'bg-gray-100' : 'bg-gray-300']" role="tab" id="tab-1" aria-controls="tabpanel-1" :aria-selected="index === 0 ? 'true' : 'false'" @click="index = 0">
         Colorado
       </button>
-      <button class="rounded-b-none" :class="[index === 1 ? 'bg-gray-100' : 'bg-gray-400']" role="tab" id="tab-2" aria-controls="tabpanel-2" :aria-selected="index === 1 ? 'true' : 'false'" @click="index = 1">
+      <button class="rounded-b-none" :class="[index === 1 ? 'bg-gray-100' : 'bg-gray-300']" role="tab" id="tab-2" aria-controls="tabpanel-2" :aria-selected="index === 1 ? 'true' : 'false'" @click="index = 1">
         Minnesota
       </button>
     </div>
 
     <div role="tabpanel" id="tabpanel-1" aria-labelledby="tab-1" :hidden="index !== 0" class="p-5 bg-gray-100">
       <h3 class="text-lg font-semibold mb-2">Colorado</h3>
-      <p>Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus. Vitae curae natoque a, donec nulla conubia in mollis. Sapien pede in tortor, lectus neque.</p>
+      <p>Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus. Vitae curae natoque a, donec nulla conubia in mollis.</p>
     </div>
 
     <div role="tabpanel" id="tabpanel-2" aria-labelledby="tab-2" :hidden="index !== 1" class="p-5 bg-gray-100">
       <h3 class="text-lg font-semibold mb-2">Minnesota</h3>
-      <p>Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur. Ullamco incididunt enim eu labore ut. Ut occaecat elit enim do occaecat aliqua laboris.</p>
+      <p>Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur. Ullamco incididunt enim eu labore ut.</p>
     </div>
 
   </article>
 
-  <article class="bg-gray-50 p-6">
+  <article>
 
     <h2 class="mb-3 text-2xl font-bold">Form</h2>
 

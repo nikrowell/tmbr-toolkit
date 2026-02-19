@@ -158,6 +158,18 @@ test(':class with array', async () => {
   assert.is(el.className, 'yes');
 });
 
+test(':class removes previous dynamic class when expression changes', async () => {
+  const el = create(`<div data-state="{i: 0}"><span class="base" :class="i === 0 ? 'a' : 'b'"></span></div>`);
+  const c = new Component(el);
+  await tick();
+  assert.ok(el.querySelector('span').classList.contains('a'));
+  c.state.i = 1;
+  await tick();
+  assert.not.ok(el.querySelector('span').classList.contains('a'));
+  assert.ok(el.querySelector('span').classList.contains('b'));
+  assert.ok(el.querySelector('span').classList.contains('base'));
+});
+
 test(':show', async () => {
   const el = create('<div data-state="{visible: false}"><div :show="visible">hidden</div></div>');
   const c = new Component(el);
