@@ -21,8 +21,23 @@ function flush() {
 
 function render(component) {
   const state = component.state;
-  for (const apply of component.directives) apply(state);
-  component.update?.(state);
+  const proto = Object.getPrototypeOf(component);
+
+  const ctx = proto !== Component.prototype
+    ? new Proxy(state, {
+        has(target, key) {
+          return Object.getOwnPropertyDescriptor(proto, key)?.get ? true : key in target;
+        },
+        get(target, key, receiver) {
+          const desc = Object.getOwnPropertyDescriptor(proto, key);
+          if (desc?.get) return desc.get.call(component);
+          return Reflect.get(target, key, receiver);
+        }
+      })
+    : state;
+
+  for (const apply of component.directives) apply(ctx);
+  component.update?.(ctx);
 }
 
 export default class Component {

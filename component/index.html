@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<main class="max-w-2xl my-10 mx-auto px-10 grid gap-5">
+<main class="max-w-2xl my-10 mx-auto px-10 grid gap-10">
 
   <article>
 
@@ -18,13 +18,13 @@
 
     <div class="flex" data-state="{count: 0}">
       <button @click="count--" class="rounded-r-none" aria-label="Increment" :disabled="count <= 0">-</button>
-      <div :text="count" class="bg-white grid place-content-center font-mono w-12 text-center"></div>
+      <div :text="count" class="bg-white border-y border-y-gray-200 grid place-content-center font-mono w-12 text-center"></div>
       <button @click="count++" class="rounded-l-none" aria-label="Decrement">+</button>
     </div>
 
   </article>
 
-  <article class="bg-gray-50 p-6">
+  <article>
 
     <h2 class="mb-3 text-2xl font-bold">Toggle</h2>
 
@@ -35,28 +35,28 @@
 
   </article>
 
-  <article class="bg-gray-50 p-6" data-state="{index: 0}">
+  <article data-state="{index: 0}">
 
     <h2 class="mb-3 text-2xl font-bold">Tabs</h2>
 
-      <div role="tablist" class="flex gap-2">
-        <button class="rounded-b-none" :class="{'bg-white': index === 0}" role="tab" id="tab-1" aria-controls="tabpanel-1" :aria-selected="index === 0 ? 'true' : 'false'" @click="index = 0">
-          Colorado
-        </button>
-        <button class="rounded-b-none" :class="{'bg-white': index === 1}" role="tab" id="tab-2" aria-controls="tabpanel-2" :aria-selected="index === 1 ? 'true' : 'false'" @click="index = 1">
-          Minnesota
-        </button>
-      </div>
+    <div role="tablist" class="flex gap-2">
+      <button class="rounded-b-none" :class="[index === 0 ? 'bg-gray-100' : 'bg-gray-400']" role="tab" id="tab-1" aria-controls="tabpanel-1" :aria-selected="index === 0 ? 'true' : 'false'" @click="index = 0">
+        Colorado
+      </button>
+      <button class="rounded-b-none" :class="[index === 1 ? 'bg-gray-100' : 'bg-gray-400']" role="tab" id="tab-2" aria-controls="tabpanel-2" :aria-selected="index === 1 ? 'true' : 'false'" @click="index = 1">
+        Minnesota
+      </button>
+    </div>
 
-      <div role="tabpanel" id="tabpanel-1" aria-labelledby="tab-1" :hidden="index !== 0" class="p-5 bg-white">
-        <h3 class="text-lg font-semibold mb-2">Colorado</h3>
-        <p>Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus. Vitae curae natoque a, donec nulla conubia in mollis. Sapien pede in tortor, lectus neque.</p>
-      </div>
+    <div role="tabpanel" id="tabpanel-1" aria-labelledby="tab-1" :hidden="index !== 0" class="p-5 bg-gray-100">
+      <h3 class="text-lg font-semibold mb-2">Colorado</h3>
+      <p>Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus. Vitae curae natoque a, donec nulla conubia in mollis. Sapien pede in tortor, lectus neque.</p>
+    </div>
 
-      <div role="tabpanel" id="tabpanel-2" aria-labelledby="tab-2" :hidden="index !== 1" class="p-5 bg-white">
-        <h3 class="text-lg font-semibold mb-2">Minnesota</h3>
-        <p>Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur. Ullamco incididunt enim eu labore ut. Ut occaecat elit enim do occaecat aliqua laboris.</p>
-      </div>
+    <div role="tabpanel" id="tabpanel-2" aria-labelledby="tab-2" :hidden="index !== 1" class="p-5 bg-gray-100">
+      <h3 class="text-lg font-semibold mb-2">Minnesota</h3>
+      <p>Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur. Ullamco incididunt enim eu labore ut. Ut occaecat elit enim do occaecat aliqua laboris.</p>
+    </div>
 
   </article>
 
@@ -82,7 +82,7 @@
         </label>
 
         <button type="submit" :disabled="!agree">Submit</button>
-        <div class="mt-3 text-sm text-gray-400" :show="!agree">Hey <span :text="name"></span>, you must agree to the terms to submit</div>
+        <div class="mt-3 text-sm text-gray-400" :show="!agree">Hey <span :text="firstName"></span>, you must agree to the terms to submit</div>
 
       </form>
 
@@ -165,7 +165,7 @@ new Form('#example');
     @apply text-base bg-gray-200 font-medium px-4 py-2 rounded-sm cursor-pointer hover:bg-gray-300 transition-colors;
   }
   button:disabled {
-    @apply opacity-50 cursor-not-allowed;
+    @apply cursor-not-allowed;
   }
   span.active {
     @apply bg-green-600;

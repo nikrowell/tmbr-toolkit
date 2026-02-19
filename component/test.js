@@ -313,7 +313,7 @@ test('update called after each render', async () => {
   c.increment();
   await tick();
   assert.is(spy.callCount, 2);
-  assert.is(spy.lastCall.arguments[0], c.state);
+  assert.is(spy.lastCall.arguments[0].count, c.state.count);
 });
 
 test('destroy removes listeners', async () => {
@@ -419,6 +419,49 @@ test(':model cleans up listener on destroy', async () => {
   input.value = 'after-destroy';
   input.dispatchEvent(new window.Event('input'));
   assert.is(c.state.name, '');
+});
+
+test('class getter accessible in template', async () => {
+
+  class Named extends Component {
+    static state = { fullName: 'Jane Doe' }
+    get firstName() { return this.state.fullName.split(' ')[0]; }
+  }
+
+  const el = create('<div><span :text="firstName"></span></div>');
+  new Named(el);
+  await tick();
+  assert.is(el.querySelector('span').textContent, 'Jane');
+});
+
+test('class getter updates when state changes', async () => {
+
+  class Named extends Component {
+    static state = { fullName: 'Jane Doe' }
+    get firstName() { return this.state.fullName.split(' ')[0]; }
+  }
+
+  const el = create('<div><span :text="firstName"></span></div>');
+  const c = new Named(el);
+  await tick();
+  assert.is(el.querySelector('span').textContent, 'Jane');
+  c.state.fullName = 'John Smith';
+  await tick();
+  assert.is(el.querySelector('span').textContent, 'John');
+});
+
+test('class getter accessible in update', async () => {
+
+  class Named extends Component {
+    static state = { fullName: 'Jane Doe' }
+    get firstName() { return this.state.fullName.split(' ')[0]; }
+    update(state) { spy.fn(state.firstName); }
+  }
+
+  const el = create('<div></div>');
+  new Named(el);
+  await tick();
+  assert.is(spy.lastCall.arguments[0], 'Jane');
 });
 
 test.run();

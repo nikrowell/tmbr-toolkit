@@ -59,7 +59,7 @@ export function bindDirective(component, node, attr, expression) {
     const type = (isCheckbox || isRadio || isSelect) ? 'change' : 'input';
 
     node.addEventListener(type, event => {
-      const value = isCheckbox ? e.target.checked : event.target.value;
+      const value = isCheckbox ? event.target.checked : event.target.value;
       component.state[expression] = isNumber ? Number(value) : value;
     }, {signal: component.controller.signal});
 
