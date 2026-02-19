@@ -23,10 +23,14 @@ export function cx(...args) {
     return el.classList;
   }
 
+  const tokenize = str => {
+    return str.split(/\s+/).filter(Boolean).map(token => [token, true]);
+  };
+
   const classes = args.reduce((result, item) => {
-    if (isArray(item))  item = item.filter(Boolean).map(value => [value, true]);
+    if (isArray(item))  item = item.filter(Boolean).flatMap(tokenize);
     if (isObject(item)) item = Object.entries(item);
-    if (isString(item)) item = [[item, true]];
+    if (isString(item)) item = tokenize(item);
     return item ? result.concat(item) : result;
   }, []);
 
