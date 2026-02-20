@@ -1,4 +1,4 @@
-import { on, findOne, findAll, isDefined, isString, toJSON, traverse } from '@tmbr/utils';
+import { on, findOne, findAll, isArray, isDefined, isObject, isString, toJSON, traverse } from '@tmbr/utils';
 import { bindDirective, bindEvent } from './bind.js';
 
 let queue;
@@ -25,11 +25,12 @@ function render(component) {
 
   const context = proto === Component.prototype ? state : new Proxy(state, {
     has(target, key) {
-      return Object.getOwnPropertyDescriptor(proto, key)?.get ? true : key in target;
+      const own = Object.getOwnPropertyDescriptor(proto, key);
+      return own?.get ? true : key in target;
     },
     get(target, key, receiver) {
-      const d = Object.getOwnPropertyDescriptor(proto, key);
-      return d?.get ? d.get.call(component) : Reflect.get(target, key, receiver);
+      const own = Object.getOwnPropertyDescriptor(proto, key);
+      return own?.get ? own.get.call(component) : Reflect.get(target, key, receiver);
     }
   });
 
@@ -80,6 +81,23 @@ export default class Component {
 
   #state() {
 
+    const state = this.el.dataset.state
+      ? toJSON(this.el.dataset.state)
+      : structuredClone(this.constructor.state);
+
+    const instance = this;
+    const reactive = (obj) => new Proxy(obj, {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+        return isArray(value) || isObject(value) ? reactive(value) : value;
+      },
+      set(target, key, value) {
+        target[key] = value;
+        enqueue(instance);
+        return true;
+      }
+    });
+
     traverse(this.el, child => {
       for (const {name, value} of [...child.attributes]) {
         if (name.startsWith(':')) {
@@ -92,18 +110,8 @@ export default class Component {
       }
     });
 
-    const state = this.el.dataset.state
-      ? toJSON(this.el.dataset.state)
-      : structuredClone(this.constructor.state);
-
-    const set = (target, key, value) => {
-      target[key] = value;
-      enqueue(this);
-      return true;
-    };
-
     enqueue(this);
-    return new Proxy(state, {set});
+    return reactive(state);
   }
 
   findOne(s) {

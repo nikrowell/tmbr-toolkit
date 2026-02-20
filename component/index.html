@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<main class="max-w-xl my-10 mx-auto px-10 grid gap-10">
+<main class="max-w-xl my-12 mx-auto px-10 grid gap-10">
 
   <article>
 
@@ -70,12 +70,12 @@
 
     <div role="tabpanel" id="tabpanel-1" aria-labelledby="tab-1" :hidden="index !== 0" class="p-5 bg-gray-100">
       <h3 class="text-lg font-semibold mb-2">Colorado</h3>
-      <p>Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus. Vitae curae natoque a, donec nulla conubia in mollis.</p>
+      <p class="text-sm">Lorem ipsum dolor sit amet, urna class vestibulum tincidunt atque, habitasse sit wisi erat dapibus.</p>
     </div>
 
     <div role="tabpanel" id="tabpanel-2" aria-labelledby="tab-2" :hidden="index !== 1" class="p-5 bg-gray-100">
       <h3 class="text-lg font-semibold mb-2">Minnesota</h3>
-      <p>Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur. Ullamco incididunt enim eu labore ut.</p>
+      <p class="text-sm">Dolor ullamco sint cupidatat labore magna adipisicing elit exercitation pariatur laborum esse sint pariatur.</p>
     </div>
 
   </article>
@@ -87,30 +87,30 @@
     <form id="example" @submit.prevent="submit" data-props="{date: '2026-02-19'}">
 
       <div class="mb-3">
-        <label for="example-greeting" class="sr-only">Greeting</label>
-        <input id="example-greeting" :model="greeting" type="text" placeholder="Greeting" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
+        <label for="example-name" class="sr-only">Name</label>
+        <input id="example-name" :model="fields.name" type="text" placeholder="Full Name" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
       </div>
 
       <div class="mb-3">
-        <label for="example-name" class="sr-only">Name</label>
-        <input id="example-name" :model="name" type="text" placeholder="Name" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
+        <label for="example-email" class="sr-only">Email</label>
+        <input id="example-email" :model="fields.email" type="email" placeholder="Email Address" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
       </div>
 
       <div class="mb-3 flex items-center gap-3">
         <div>
           <label for="example-age" class="sr-only">Age</label>
-          <input id="example-age" :model="age" type="number" name="age" placeholder="Age" class="p-3 w-18 rounded border border-gray-300 bg-white shadow">
+          <input id="example-age" :model="fields.age" type="number" placeholder="Age" class="p-3 w-18 rounded border border-gray-300 bg-white shadow">
         </div>
-        <span class="text-sm text-gray-500">only <span :text="to100"></span> years until you're 100!</span>
+        <span class="text-sm text-gray-500" :show="fields.age">
+          only <span :text="to100"></span> years until you're 100!
+        </span>
       </div>
 
       <label class="mb-3 flex gap-2 text-sm select-none">
-        <input :model="agree" type="checkbox" />
-        I agree to the terms of use
+        <input :model="agree" type="checkbox" /> I agree to the terms of use
       </label>
 
-      <button type="submit" :disabled="!agree">Submit</button>
-      <div class="mt-3 text-sm text-gray-500" :show="!agree" :html="message"></div>
+      <button type="submit" :disabled="disabled">Submit</button>
 
     </form>
 
@@ -122,30 +122,24 @@
 import Component from './index.js';
 
 class Counter extends Component {
-
-  static state = {
-    count: 5
-  };
-
-  get doubled() {
-    return this.state.count * 2;
-  }
-
-  inc() {
-    this.state.count++;
-  }
-
-  dec() {
-    this.state.count--;
-  }
+  static state = { count: 5 };
+  get doubled() { return this.state.count * 2; }
+  update(state) { console.log(this.constructor.name, 'updated', {...state}); }
+  inc() { this.state.count++; }
+  dec() { this.state.count--; }
 }
 
 class Form extends Component {
 
   static state = {
-    greeting: 'Hi',
-    name: 'John Smith',
-    age: 45,
+    fields: {
+      name: 'John Smith',
+      email: '',
+      age: null,
+    },
+    errors: {
+
+    },
     agree: false
   };
 
@@ -159,24 +153,20 @@ class Form extends Component {
   }
 
   get firstName() {
-    return this.state.name.split(' ')[0];
+    return this.state.fields.name.split(' ')[0];
   }
 
   get to100() {
-    console.log(this.state)
-    return 100 - this.state.age;
+    return 100 - this.state.fields.age;
   }
 
-  get message() {
-    return `<b>${this.state.greeting} ${this.firstName}</b>, you must agree to the terms to submit`;
-  }
-
-  update(state) {
-    console.log(this.constructor.name, 'updated\n', {...state});
+  get disabled() {
+    return !this.state.agree || !this.state.fields.name.trim().length;
   }
 
   submit(event) {
-    console.log('submit', event.target, this.state);
+    console.log('submit', this.state);
+    alert(`Hi ${this.firstName}!`);
   }
 }
 
@@ -194,7 +184,7 @@ new Form('#example');
     @apply text-base bg-gray-200 font-medium px-4 py-2 rounded-sm cursor-pointer hover:bg-gray-300 transition-colors;
   }
   button:disabled {
-    @apply cursor-not-allowed;
+    @apply bg-gray-100 text-gray-400 cursor-not-allowed;
   }
   span.active {
     @apply bg-green-600;

@@ -62,6 +62,24 @@ class Counter extends Component {
 new Counter('#counter');
 ```
 
+## State
+
+State is deeply reactive so mutations to nested objects and arrays trigger a render.
+
+```js
+class Form extends Component {
+  static state = {
+    fields: {name: '', email: ''},
+    errors: {}
+  };
+}
+```
+
+```html
+<input type="text" :model="fields.name" />
+<span :text="errors.name"></span>
+```
+
 ## Directives
 
 Directives are expressions evaluated with the current state.

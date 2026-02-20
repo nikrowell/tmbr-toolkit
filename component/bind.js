@@ -1,4 +1,4 @@
-import { cx, isFunction } from '@tmbr/utils';
+import { cx, dot, isFunction } from '@tmbr/utils';
 
 const BOOLEANS = new Set([
   'allowfullscreen',
@@ -60,7 +60,7 @@ export function bindDirective(component, node, attr, expression) {
 
     node.addEventListener(type, event => {
       const value = isCheckbox ? event.target.checked : event.target.value;
-      component.state[expression] = isNumber ? Number(value) : value;
+      dot(component.state, expression, isNumber ? Number(value) : value);
     }, {signal: component.controller.signal});
 
   } else if (attr === 'text') {
@@ -70,8 +70,8 @@ export function bindDirective(component, node, attr, expression) {
   } else if (attr === 'value') {
     apply = value => node.value = value;
   } else if (attr === 'show') {
-    const display = node.style.display || '';
-    apply = value => node.style.display = value ? display : 'none';
+    const initial = node.style.display || '';
+    apply = value => node.style.display = value ? initial : 'none';
   } else if (attr === 'class') {
     const initial = node.className;
     apply = value => { node.className = initial; cx(node, value); };
