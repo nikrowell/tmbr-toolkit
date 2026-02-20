@@ -1,13 +1,13 @@
 import { on, findOne, findAll, isArray, isDefined, isObject, isString, toJSON, traverse } from '@tmbr/utils';
 import { bindDirective, bindEvent } from './bind.js';
 
+let cache;
 let queue;
 let scheduled = false;
 
 function enqueue(component) {
   queue ??= new Set();
   queue.add(component);
-
   if (scheduled) return;
   queueMicrotask(flush);
   scheduled = true;
@@ -20,19 +20,25 @@ function flush() {
 }
 
 function render(component) {
-  const state = component.state;
-  const proto = Object.getPrototypeOf(component);
+  cache ??= new WeakMap();
+  let context = cache.get(component);
 
-  const context = proto === Component.prototype ? state : new Proxy(state, {
-    has(target, key) {
-      const own = Object.getOwnPropertyDescriptor(proto, key);
-      return own?.get ? true : key in target;
-    },
-    get(target, key, receiver) {
-      const own = Object.getOwnPropertyDescriptor(proto, key);
-      return own?.get ? own.get.call(component) : Reflect.get(target, key, receiver);
-    }
-  });
+  if (!context) {
+    const proto = Object.getPrototypeOf(component);
+
+    context = proto !== Component.prototype ? new Proxy(component.state, {
+      has(target, key) {
+        const own = Object.getOwnPropertyDescriptor(proto, key);
+        return own?.get ? true : key in target;
+      },
+      get(target, key, receiver) {
+        const own = Object.getOwnPropertyDescriptor(proto, key);
+        return own?.get ? own.get.call(component) : Reflect.get(target, key, receiver);
+      }
+    }) : component.state;
+
+    cache.set(component, context);
+  }
 
   for (const apply of component.directives) apply(context);
   component.update?.(context);
@@ -81,22 +87,28 @@ export default class Component {
 
   #state() {
 
-    const state = this.el.dataset.state
-      ? toJSON(this.el.dataset.state)
-      : structuredClone(this.constructor.state);
-
+    const state = this.el.dataset.state ? toJSON(this.el.dataset.state) : structuredClone(this.constructor.state);
+    const proxies = new WeakMap();
     const instance = this;
-    const reactive = (obj) => new Proxy(obj, {
-      get(target, key, receiver) {
-        const value = Reflect.get(target, key, receiver);
-        return isArray(value) || isObject(value) ? reactive(value) : value;
-      },
-      set(target, key, value) {
-        target[key] = value;
-        enqueue(instance);
-        return true;
-      }
-    });
+
+    const reactive = (obj) => {
+      if (proxies.has(obj)) return proxies.get(obj);
+
+      const proxy = new Proxy(obj, {
+        get(target, key, receiver) {
+          const value = Reflect.get(target, key, receiver);
+          return isArray(value) || isObject(value) ? reactive(value) : value;
+        },
+        set(target, key, value) {
+          target[key] = value;
+          enqueue(instance);
+          return true;
+        }
+      });
+
+      proxies.set(obj, proxy);
+      return proxy;
+    };
 
     traverse(this.el, child => {
       for (const {name, value} of [...child.attributes]) {
@@ -124,8 +136,8 @@ export default class Component {
 
   on(event, target, fn) {
     const off = on(event, target, fn, this.el);
-    this.on.destroy ??= [];
-    this.on.destroy.push(off);
+    this.offs ??= [];
+    this.offs.push(off);
     return off;
   }
 
@@ -135,9 +147,10 @@ export default class Component {
   }
 
   destroy() {
-    this.on.destroy?.forEach(off => off());
     this.controller?.abort();
     this.directives.length = 0;
-    queue.delete(this);
+    this.offs?.forEach(off => off());
+    cache?.delete(this);
+    queue?.delete(this);
   }
 }

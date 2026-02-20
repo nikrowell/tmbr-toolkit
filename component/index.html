@@ -165,8 +165,11 @@ class Form extends Component {
   }
 
   submit(event) {
-    console.log('submit', this.state);
-    alert(`Hi ${this.firstName}!`);
+    if (!this.state.fields.email.includes('@')) {
+      alert('Invalid email address');
+    } else {
+      alert(`Hi ${this.firstName}!`);
+    }
   }
 }
 
