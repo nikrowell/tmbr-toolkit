@@ -6,5 +6,5 @@
  * @returns {Function} wrapped function that catches errors
  */
 export function safe(fn, handler) {
-  return () => fn().catch(handler);
+  return (...args) => fn(...args).catch(handler);
 };
