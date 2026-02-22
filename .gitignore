@@ -1,16 +1,13 @@
-/*
-
+*
 .DS_Store
 node_modules
 
 !.gitignore
 !package.json
 !README.md
-!CLAUDE.md
-!carousel/
-!component/
-!emitter/
-!shader/
-!store/
-!utils/
-CLAUDE.md
+!carousel
+!component
+!emitter
+!shader
+!store
+!utils
