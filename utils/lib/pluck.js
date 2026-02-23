@@ -1,4 +1,5 @@
 import { isArray } from './isArray.js';
+import { dot } from './dot.js';
 import { only } from './only.js';
 
 /**
@@ -10,9 +11,12 @@ import { only } from './only.js';
  *
  * @example
  * pluck(users, 'name')                // ['John', 'Jane']
+ * pluck(users, 'stats.age')           // [45, 39]
  * pluck(users, ['name', 'email'])     // [{name: 'John', email: '...'}, {name: 'Jane', email: '...'}]
- * pluck(users, ['name', 'stats.age']) // [{name: 'John', age: 45}, {name: 'Jane', age: 32}]
+ * pluck(users, ['name', 'stats.age']) // [{name: 'John', age: 45}, {name: 'Jane', age: 39}]
  */
 export function pluck(array, key) {
-  return isArray(key) ? array.map(item => only(item, key)) : array.map(item => item[key]);
+  return isArray(key)
+    ? array.map(item => only(item, key))
+    : array.map(item => dot(item, key));
 };

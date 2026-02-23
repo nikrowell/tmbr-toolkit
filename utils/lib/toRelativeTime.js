@@ -15,7 +15,7 @@ export function toRelativeTime(value) {
   const index = cutoffs.findIndex(seconds => seconds > Math.abs(elapsed));
   const divisor = index ? cutoffs[index - 1] : 1;
 
-  rtf ??= new Intl.RelativeTimeFormat('en', {numeric: 'auto'});
+  rtf ??= new Intl.RelativeTimeFormat('en', {numeric: 'always'});
   return rtf.format(Math.trunc(elapsed / divisor), units[index]);
 };
 
