@@ -119,6 +119,16 @@ test('state mutations batch into single render', async () => {
   assert.is(c.state.a, 3);
 });
 
+test('nested state mutation triggers render', async () => {
+  const el = create(`<div data-state="{fields: {name: 'John'}}"><span :text="fields.name"></span></div>`);
+  const c = new Component(el);
+  await tick();
+  assert.is(el.querySelector('span').textContent, 'John');
+  c.state.fields.name = 'Jane';
+  await tick();
+  assert.is(el.querySelector('span').textContent, 'Jane');
+});
+
 test('array push triggers render', async () => {
 
   class Tester extends Component {
@@ -140,14 +150,25 @@ test('array push triggers render', async () => {
   assert.is(c.state.items.length, 1);
 });
 
-test('nested state mutation triggers render', async () => {
-  const el = create(`<div data-state="{fields: {name: 'John'}}"><span :text="fields.name"></span></div>`);
-  const c = new Component(el);
+test('update called after render', async () => {
+
+  class Tester extends Component {
+    static state = {
+      count: 0
+    }
+    update(state) {
+      spy.fn(state);
+    }
+  }
+
+  const el = create();
+  const c = new Tester(el);
   await tick();
-  assert.is(el.querySelector('span').textContent, 'John');
-  c.state.fields.name = 'Jane';
+  assert.ok(spy.called);
+  c.state.count++;
   await tick();
-  assert.is(el.querySelector('span').textContent, 'Jane');
+  assert.is(spy.callCount, 2);
+  assert.is(spy.lastCall.arguments[0].count, c.state.count);
 });
 
 test(':text', async () => {
@@ -235,6 +256,86 @@ test(':attribute fallback', async () => {
   new Component(el);
   await tick();
   assert.is(el.querySelector('a').getAttribute('href'), 'https://example.com');
+});
+
+test(':model text input sets value from state', async () => {
+  const el = create(`<div data-state="{name: 'Nik'}"><input type="text" :model="name"></div>`);
+  new Component(el);
+  await tick();
+  assert.is(el.querySelector('input').value, 'Nik');
+});
+
+test(':model text input updates state on change', async () => {
+  const el = create(`<div data-state="{name: ''}"><input type="text" :model="name"></div>`);
+  const c = new Component(el);
+  await tick();
+  const input = el.querySelector('input');
+  input.value = 'Jane';
+  input.dispatchEvent(new window.Event('input'));
+  assert.is(c.state.name, 'Jane');
+});
+
+test(':model checkbox sets checked from state', async () => {
+  const el = create('<div data-state="{active: true}"><input type="checkbox" :model="active"></div>');
+  new Component(el);
+  await tick();
+  assert.ok(el.querySelector('input').checked);
+});
+
+test(':model checkbox updates state on change', async () => {
+  const el = create('<div data-state="{active: false}"><input type="checkbox" :model="active"></div>');
+  const c = new Component(el);
+  const input = el.querySelector('input');
+  input.checked = true;
+  input.dispatchEvent(new window.Event('change'));
+  assert.is(c.state.active, true);
+});
+
+test(':model number input casts value to number', async () => {
+  const el = create('<div data-state="{age: 0}"><input type="number" :model="age"></div>');
+  const c = new Component(el);
+  const input = el.querySelector('input');
+  input.value = '45';
+  input.dispatchEvent(new window.Event('input'));
+  assert.type(c.state.age, 'number');
+  assert.is(c.state.age, 45);
+});
+
+test(':model select updates state on change', async () => {
+  const el = create(`<div data-state="{color: 'red'}"><select :model="color"><option value="red">Red</option><option value="blue">Blue</option></select></div>`);
+  const c = new Component(el);
+  await tick();
+  const select = el.querySelector('select');
+  assert.is(select.value, 'red');
+  select.value = 'blue';
+  select.dispatchEvent(new window.Event('change'));
+  assert.is(c.state.color, 'blue');
+});
+
+test(':model cleans up listener on destroy', async () => {
+  const el = create(`<div data-state="{name: 'initial'}"><input type="text" :model="name"></div>`);
+  const c = new Component(el);
+  c.destroy();
+  const input = el.querySelector('input');
+  input.value = 'destroyed';
+  input.dispatchEvent(new window.Event('input'));
+  assert.is(c.state.name, 'initial');
+});
+
+test(':model with dot notation reads nested state', async () => {
+  const el = create(`<div data-state="{fields: {name: 'Nik'}}"><input type="text" :model="fields.name"></div>`);
+  new Component(el);
+  await tick();
+  assert.is(el.querySelector('input').value, 'Nik');
+});
+
+test(':model with dot notation writes nested state', async () => {
+  const el = create(`<div data-state="{fields: {name: ''}}"><input type="text" :model="fields.name"></div>`);
+  const c = new Component(el);
+  const input = el.querySelector('input');
+  input.value = 'Jane';
+  input.dispatchEvent(new window.Event('input'));
+  assert.is(c.state.fields.name, 'Jane');
 });
 
 test('@event calls component method', async () => {
@@ -326,40 +427,6 @@ test('directives, events and ref attributes removed', () => {
   assert.not.ok(el.querySelector('span').hasAttribute(':text'));
 });
 
-test('update called after render', async () => {
-
-  class Tester extends Component {
-    static state = {
-      count: 0
-    }
-    update(state) {
-      spy.fn(state);
-    }
-  }
-
-  const el = create();
-  const c = new Tester(el);
-  await tick();
-  assert.ok(spy.called);
-  c.state.count++;
-  await tick();
-  assert.is(spy.callCount, 2);
-  assert.is(spy.lastCall.arguments[0].count, c.state.count);
-});
-
-test('destroy removes listeners and clears directives', async () => {
-  class Tester extends Component { click() { spy.fn() } }
-  const el = create('<div data-state="{n: 1}"><button @click="click">click</button><span :text="n"></span></div>');
-  const c = new Tester(el);
-  el.querySelector('button').click();
-  assert.ok(spy.called);
-  assert.ok(c.directives.length, 1);
-  c.destroy();
-  el.querySelector('button').click();
-  assert.is(spy.callCount, 1);
-  assert.is(c.directives.length, 0);
-});
-
 test('dispatch event', async () => {
   const el = create();
   const c = new Component(el);
@@ -378,84 +445,17 @@ test('dispatch event with options', async () => {
   document.body.removeEventListener('bubble', spy.fn);
 });
 
-test(':model text input sets value from state', async () => {
-  const el = create(`<div data-state="{name: 'Nik'}"><input type="text" :model="name"></div>`);
-  new Component(el);
-  await tick();
-  assert.is(el.querySelector('input').value, 'Nik');
-});
-
-test(':model text input updates state on change', async () => {
-  const el = create(`<div data-state="{name: ''}"><input type="text" :model="name"></div>`);
-  const c = new Component(el);
-  await tick();
-  const input = el.querySelector('input');
-  input.value = 'Jane';
-  input.dispatchEvent(new window.Event('input'));
-  assert.is(c.state.name, 'Jane');
-});
-
-test(':model checkbox sets checked from state', async () => {
-  const el = create('<div data-state="{active: true}"><input type="checkbox" :model="active"></div>');
-  new Component(el);
-  await tick();
-  assert.ok(el.querySelector('input').checked);
-});
-
-test(':model checkbox updates state on change', async () => {
-  const el = create('<div data-state="{active: false}"><input type="checkbox" :model="active"></div>');
-  const c = new Component(el);
-  const input = el.querySelector('input');
-  input.checked = true;
-  input.dispatchEvent(new window.Event('change'));
-  assert.is(c.state.active, true);
-});
-
-test(':model number input casts value to number', async () => {
-  const el = create('<div data-state="{age: 0}"><input type="number" :model="age"></div>');
-  const c = new Component(el);
-  const input = el.querySelector('input');
-  input.value = '45';
-  input.dispatchEvent(new window.Event('input'));
-  assert.type(c.state.age, 'number');
-  assert.is(c.state.age, 45);
-});
-
-test(':model select updates state on change', async () => {
-  const el = create(`<div data-state="{color: 'red'}"><select :model="color"><option value="red">Red</option><option value="blue">Blue</option></select></div>`);
-  const c = new Component(el);
-  await tick();
-  const select = el.querySelector('select');
-  assert.is(select.value, 'red');
-  select.value = 'blue';
-  select.dispatchEvent(new window.Event('change'));
-  assert.is(c.state.color, 'blue');
-});
-
-test(':model cleans up listener on destroy', async () => {
-  const el = create(`<div data-state="{name: 'initial'}"><input type="text" :model="name"></div>`);
-  const c = new Component(el);
+test('destroy removes listeners and clears directives', async () => {
+  class Tester extends Component { click() { spy.fn() } }
+  const el = create('<div data-state="{n: 1}"><button @click="click">click</button><span :text="n"></span></div>');
+  const c = new Tester(el);
+  el.querySelector('button').click();
+  assert.ok(spy.called);
+  assert.ok(c.directives.length, 1);
   c.destroy();
-  const input = el.querySelector('input');
-  input.value = 'destroyed';
-  input.dispatchEvent(new window.Event('input'));
-  assert.is(c.state.name, 'initial');
-});
-
-test(':model with dot notation reads nested state', async () => {
-  const el = create(`<div data-state="{fields: {name: 'Nik'}}"><input type="text" :model="fields.name"></div>`);
-  new Component(el);
-  await tick();
-  assert.is(el.querySelector('input').value, 'Nik');
-});
-
-test(':model with dot notation writes nested state', async () => {
-  const el = create(`<div data-state="{fields: {name: ''}}"><input type="text" :model="fields.name"></div>`);
-  const c = new Component(el);
-  const input = el.querySelector('input');
-  input.value = 'Jane';
-  input.dispatchEvent(new window.Event('input'));
-  assert.is(c.state.fields.name, 'Jane');
+  el.querySelector('button').click();
+  assert.is(spy.callCount, 1);
+  assert.is(c.directives.length, 0);
 });
 
 test('computed getter accessible in template', async () => {
