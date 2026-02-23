@@ -12,10 +12,12 @@ import { isUndefined } from './isUndefined.js';
 export function distance(x1, y1, x2, y2) {
 
   if (isUndefined(x2) && isUndefined(y2)) {
-    x1 = x1.x;
-    y1 = x1.y;
-    x2 = y1.x;
-    y2 = y1.y;
+    const a = x1;
+    const b = y1;
+    x1 = a.x;
+    y1 = a.y;
+    x2 = b.x;
+    y2 = b.y;
   }
 
   const dx = x2 - x1;

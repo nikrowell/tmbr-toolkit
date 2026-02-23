@@ -57,6 +57,17 @@ test('combine', () => {
   assert.equal(b.calls[0].arguments, ['foo', 'bar']);
 });
 
+test('distance', () => {
+  // coordinate mode
+  assert.is(distance(0, 0, 3, 4), 5);
+  assert.is(distance(1, 1, 1, 1), 0);
+  assert.is(distance(-1, -1, 2, 3), 5);
+  // object mode
+  assert.is(distance({x: 0, y: 0}, {x: 3, y: 4}), 5);
+  assert.is(distance({x: 1, y: 1}, {x: 1, y: 1}), 0);
+  assert.is(distance({x: -1, y: -1}, {x: 2, y: 3}), 5);
+});
+
 test('cx', () => {
   const classes = cx('one', {'two': true, 'three': 0}, [true && 'four', null && 'five', 'six-seven lol']);
   /*      */ cx(div, 'one', {'two': true, 'three': 0}, [true && 'four', null && 'five', 'six-seven lol']);
