@@ -9,89 +9,23 @@
 </head>
 <body>
 
-    <div id="traverse">
-        <header>
-            <h1>Hello</h1>
-        </header>
-        <main>
-            <p>Lorem <strong>ipsum</strong> dolor</p>
-            <ul>
-                <li>Minnesota</li>
-                <li>Colorado</li>
-            </ul>
-        </main>
-    </div>
-
-    <div id="on">
-        <button type="button" class="button"><span>a</span></button>
-        <button type="button" class="button"><span>b</span></button>
-    </div>
-
-    <div id="trap">
-        <button type="button">Menu</button>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
-            <input type="search" placeholder="Search" />
-        </nav>
-    </div>
+<div id="trap">
+    <button type="button">Menu</button>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <input type="search" placeholder="Search" />
+    </nav>
+</div>
 
 <script type="module">
-import { on } from './lib/on.js';
 import { io } from './lib/io.js';
 import { once } from './lib/once.js';
 import { request } from './lib/request.js';
 import { cookie } from './lib/cookie.js';
 import { worker } from './lib/worker.js';
 import { trap } from './lib/trap.js';
-
-// 1.  on | off : event with selector
-// 2.  on | off : event with selector and scope
-// 3.  on | off : event with element
-// 4.  on | off : event with array
-// 5.  on | off : multiple events with selector
-// 6.  on | off : multiple events with selector and scope
-// 7.  on | off : multiple events with element
-// 8.  on | off : multiple events with array
-// 9.  on | off : event object with selector
-// 10. on | off : event object with selector and scope
-// 11. on | off : event object with element
-// 12. on | off : event object with array
-
-const div = document.getElementById('on');
-const buttons = [...div.querySelectorAll('button')];
-const [ a, b ] = buttons;
-
-let off;
-
-// off = once('click ', '.button', e => console.log(e.target.matches('.button')));
-// off = once('click ', '.button', e => console.log(e.currentTarget), div);
-// off = once('click', a, e => console.log(e.type, e.target === a));
-// off = once('click', buttons, e => console.log(buttons.includes(event.target)));
-
-// off = on('click', '.button', e => console.log(e.target.matches('.button')));
-// off = on('click', '.button', e => console.log(e.currentTarget), div);
-// off = on('click', a, e => console.log(e.type, e.target === a));
-// off = on('click', buttons, e => console.log(buttons.includes(event.target)));
-
-// off = on('click mouseenter', '.button', e => console.log(e.target.matches('.button')));
-// off = on('click mouseenter', '.button', e => console.log(e.currentTarget), div);
-// off = on('click mouseenter', a, e => console.log(e.type, e.target === a));
-// off = on('click mouseenter', buttons, e => console.log(e.type, e.target.matches('.button')));
-
-// off = on(['click', 'mouseenter'], '.button', e => console.log(e.target.matches('.button')));
-// off = on(['click', 'mouseenter'], '.button', e => console.log(e.currentTarget), div);
-// off = on(['click', 'mouseenter'], a, e => console.log(e.type, e.target === a));
-// off = on(['click', 'mouseenter'], buttons, e => console.log(e.type, e.target.matches('.button')));
-
-// off = on(events, '.button', div);
-// off = on(events, a);
-// off = on(events, buttons);
-
-off && setTimeout(() => (console.log('off'), off()), 5000);
-
-
 
 // <div style="height:1000px;width:100px;background:red;margin:30px auto"></div>
 // <div id="io" style="height:100px;width:100px;background:green;margin:30px auto"></div>

@@ -44,6 +44,7 @@ test.before(async () => {
 });
 
 test.before.each(() => {
+  div?.remove();
   div = document.createElement('div');
 });
 
@@ -62,6 +63,14 @@ test('cx', () => {
   assert.is(classes, 'one two four six-seven lol');
   assert.is(classes, div.className);
   assert.is(cx(div), div.classList);
+
+  cx(div, {'a': true, 'b': true});
+  assert.ok(div.classList.contains('a'));
+  assert.ok(div.classList.contains('b'));
+
+  cx(div, {'b': false});
+  assert.ok(div.classList.contains('a'));
+  assert.not.ok(div.classList.contains('b'));
 });
 
 test('dot', () => {
@@ -106,6 +115,37 @@ test('format', () => {
   assert.is(format('Do', date), '21st');
   date.setDate(11);
   assert.is(format('Do', date), '11th');
+
+  date = new Date(2012, 2, 7, 9, 3, 5);
+  assert.is(format('YY', date), '12');
+  assert.is(format('M', date), '3');
+  assert.is(format('MM', date), '03');
+  assert.is(format('MMM', date), 'Mar');
+  assert.is(format('D', date), '7');
+  assert.is(format('DD', date), '07');
+  assert.is(format('DDD', date), 'Wed');
+  assert.is(format('H', date), '9');
+  assert.is(format('HH', date), '09');
+  assert.is(format('hh', date), '09');
+  assert.is(format('A', date), 'AM');
+
+  // afternoon hours for hh 12-hour with padding
+  date = new Date(2012, 0, 1, 15, 0, 0);
+  assert.is(format('hh', date), '03');
+  assert.is(format('h', date), '3');
+  assert.is(format('A', date), 'PM');
+
+  // midnight edge case hour 0 → 12 in 12-hour format
+  date = new Date(2012, 0, 1, 0, 0, 0);
+  assert.is(format('h', date), '12');
+  assert.is(format('hh', date), '12');
+
+  // date as string
+  assert.is(format('YYYY', '2020-06-15'), '2020');
+  // date as number
+  assert.is(format('YYYY', new Date(2020, 0, 1).getTime()), '2020');
+  // no date defaults to now
+  assert.is(format('YYYY'), String(new Date().getFullYear()));
 });
 
 test('html', () => {
@@ -139,6 +179,10 @@ test('html', () => {
   const button = html`<button type="button" class="button">Submit</button>`;
   assert.is(button.className, 'button');
   assert.is(button.textContent, 'Submit');
+
+  const multi = html`<p>a</p><p>b</p>`;
+  assert.ok(multi instanceof DocumentFragment);
+  assert.is(multi.childElementCount, 2);
 });
 
 test('isElement', () => {
@@ -168,11 +212,6 @@ test('isEmpty', () => {
   assert.ok(isEmpty(''));
   assert.ok(isEmpty([]));
   assert.ok(isEmpty({}));
-  // assert.ok(isEmpty(new Boolean()));
-  // assert.ok(isEmpty(new String()));
-  // assert.ok(isEmpty(new Set()));
-  // assert.ok(isEmpty(new Map()));
-  // assert.ok(isEmpty(Symbol('abc')));
 });
 
 test('isIterator', () => {
@@ -206,8 +245,8 @@ test('observable', () => {
 
   const cb1 = snoop(noop);
   const cb2 = snoop(noop);
-  const store = observable({count: 0}, cb1.fn);
-  const unsubscribe = store.subscribe(cb2.fn);
+  let store = observable({count: 0}, cb1.fn);
+  let unsubscribe = store.subscribe(cb2.fn);
 
   store.count = 1;
   store.count = 1;
@@ -231,39 +270,112 @@ test('observable', () => {
   // subscribe is removed from state arguments
   assert.equal(cb1.calls[0].arguments[0].subscribe, undefined);
   assert.equal(cb1.calls[0].arguments[1].subscribe, undefined);
+
+  // multiple keys trigger independent callbacks
+  const multi = snoop(noop);
+  store = observable({x: 0, y: 0}, multi.fn);
+  store.x = 1;
+  store.y = 2;
+  assert.ok(multi.callCount === 2);
+  assert.equal(multi.calls[0].arguments[2], 'x');
+  assert.equal(multi.calls[1].arguments[2], 'y');
 });
 
 test('on', () => {
 
+  div.innerHTML = /* html */`
+  <div id="on">
+    <header><button type="button" class="button"><span>a</span></button></header>
+    <footer><button type="button" class="button"><span>b</span></button></footer>
+  </div>`;
+
+  document.body.append(div);
   const [ a, b ] = document.querySelectorAll('#on button');
 
-  let callback = snoop(noop);
+  let callback;
   let off;
 
-  function trigger(el, event) {
-    el.dispatchEvent(new window.Event(event));
-  }
+  const trigger = (el, event, bubbles = true) => {
+    el.dispatchEvent(new window.Event(event, {bubbles}));
+  };
 
   // on | off : event with selector
-  // on | off : event with element
-  // on | off : event with array
-  // on | off : multiple events with selector
-  // on | off : multiple events with element
-  // on | off : multiple events with array
-
+  callback = snoop(noop);
   off = on('click', '#on button', callback.fn);
-  // on('click', a, callback.fn);
-  // on('click', [a, b], callback.fn);
-  // on('mouseenter mouseleave', '#on button', callback.fn);
-  // on('mouseenter mouseleave', a, callback.fn);
-  // on('mouseenter mouseleave', [a, b], callback.fn);
-
   trigger(a, 'click');
   off();
   trigger(a, 'click');
-
-  assert.equal(callback.firstCall.arguments[0].target, a);
   assert.ok(callback.calledOnce);
+  assert.is(callback.firstCall.arguments[0].target, a);
+
+  // on | off : event with element
+  callback = snoop(noop);
+  off = on('click', a, callback.fn);
+  trigger(a, 'click');
+  off();
+  trigger(a, 'click');
+  assert.ok(callback.calledOnce);
+
+  // on | off : event with array of elements
+  callback = snoop(noop);
+  off = on('click', [a, b], callback.fn);
+  trigger(a, 'click');
+  trigger(b, 'click');
+  off();
+  trigger(a, 'click');
+  assert.ok(callback.callCount === 2);
+
+  // on | off : multiple events with selector
+  callback = snoop(noop);
+  off = on('mouseenter mouseleave', '#on button', callback.fn);
+  trigger(a, 'mouseenter', false);
+  trigger(a, 'mouseleave', false);
+  off();
+  trigger(a, 'mouseenter', false);
+  assert.ok(callback.callCount === 2);
+
+  // on | off : multiple events with element
+  callback = snoop(noop);
+  off = on('mouseenter mouseleave', a, callback.fn);
+  trigger(a, 'mouseenter', false);
+  trigger(a, 'mouseleave', false);
+  off();
+  trigger(a, 'mouseenter', false);
+  assert.ok(callback.callCount === 2);
+
+  // on | off : multiple events with array of elements
+  callback = snoop(noop);
+  off = on('mouseenter mouseleave', [a, b], callback.fn);
+  trigger(a, 'mouseenter', false);
+  trigger(b, 'mouseleave', false);
+  off();
+  trigger(a, 'mouseenter', false);
+  assert.ok(callback.callCount === 2);
+
+  // on | off : multiple events as array with selector
+  callback = snoop(noop);
+  off = on(['click', 'dblclick'], '#on button', callback.fn);
+  trigger(a, 'dblclick');
+  off();
+  trigger(a, 'dblclick');
+  assert.ok(callback.calledOnce);
+
+  // on | off : event with selector and scope
+  callback = snoop(noop);
+  off = on('click', '#on button', callback.fn, div.querySelector('header'));
+  trigger(a, 'click');
+  trigger(b, 'click');
+  off();
+  trigger(a, 'click');
+  assert.ok(callback.calledOnce);
+  assert.is(callback.firstCall.arguments[0].target, a);
+
+  // delegated event sets event.target when child triggers bubbling event
+  callback = snoop(noop);
+  off = on('click', '#on button', callback.fn);
+  trigger(a.firstElementChild, 'click');
+  off();
+  assert.is(callback.firstCall.arguments[0].target, a);
 });
 
 test('only', () => {
@@ -328,6 +440,7 @@ test('pluck', () => {
   // single key returns array of values
   assert.equal(pluck(users, 'name'), ['John', 'Jane']);
   assert.equal(pluck(users, 'email'), ['john@example.com', 'jane@example.com']);
+  assert.equal(pluck(users, 'stats.age'), [45, 39]);
 
   // array of keys returns array of objects via only()
   assert.equal(pluck(users, ['name', 'email']), [
@@ -349,11 +462,25 @@ test('pluck', () => {
 });
 
 test('safe', async () => {
-  const errorTrigger = snoop(async () => fail());
+  // error path (handler called)
+  const errorFn = snoop(async () => fail());
   const errorHandler = snoop(noop);
-  await safe(errorTrigger.fn, errorHandler.fn)();
-  assert.ok(errorTrigger.called);
+  await safe(errorFn.fn, errorHandler.fn)();
+  assert.ok(errorFn.called);
   assert.ok(errorHandler.called);
+
+  // success path (handler not called)
+  const successFn = snoop(async () => 'ok');
+  const successHandler = snoop(noop);
+  await safe(successFn.fn, successHandler.fn)();
+  assert.ok(successFn.called);
+  assert.not.ok(successHandler.called);
+
+  // args forwarded to fn
+  const argFn = snoop(async (a, b) => a + b);
+  const argHandler = snoop(noop);
+  await safe(argFn.fn, argHandler.fn)(1, 2);
+  assert.equal(argFn.firstCall.arguments, [1, 2]);
 });
 
 test('settled', async () => {
@@ -398,13 +525,30 @@ test('toRelativeTime', () => {
   assert.is(toRelativeTime(now - 5 * 60 * 1000), '5 minutes ago');
   assert.is(toRelativeTime(now - 3 * 60 * 60 * 1000), '3 hours ago');
   assert.is(toRelativeTime(now - 2 * 24 * 60 * 60 * 1000), '2 days ago');
+  assert.is(toRelativeTime(now - 1 * 7 * 24 * 60 * 60 * 1000), '1 week ago');
+  assert.is(toRelativeTime(now - 2 * 30 * 24 * 60 * 60 * 1000), '2 months ago');
+  assert.is(toRelativeTime(now - 3 * 365 * 24 * 60 * 60 * 1000), '3 years ago');
   // future
   assert.is(toRelativeTime(now + 45 * 1000), 'in 45 seconds');
   assert.is(toRelativeTime(now + 10 * 60 * 1000), 'in 10 minutes');
+  assert.is(toRelativeTime(now + 1 * 24 * 60 * 60 * 1000), 'in 1 day');
+  assert.is(toRelativeTime(now + 2 * 7 * 24 * 60 * 60 * 1000), 'in 2 weeks');
 });
 
 test('traverse', () => {
-  const node = document.getElementById('traverse');
+  const node = document.createElement('div');
+  node.innerHTML = /* html */`
+  <header>
+    <h1>Hello</h1>
+  </header>
+  <main>
+    <p>Lorem <strong>ipsum</strong> dolor</p>
+    <ul>
+      <li>Minnesota</li>
+      <li>Colorado</li>
+    </ul>
+  </main>
+  `
   const tags = [];
   const text = [];
   traverse(node, el => tags.push(el.nodeName.toLowerCase()));
