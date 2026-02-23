@@ -13,13 +13,14 @@ export function toBoolean(value) {
     return value;
   }
 
-  if (isString('string')) {
+  if (isString(value)) {
     switch (value.toLowerCase()) {
       case 'undefined':
       case 'false':
       case 'null':
       case 'no':
       case '0':
+      case '':
         return false;
       case 'true':
       case 'yes':

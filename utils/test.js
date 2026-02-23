@@ -6,6 +6,7 @@ import * as assert from 'uvu/assert';
 import {
   combine,
   cx,
+  distance,
   dot,
   format,
   html,
@@ -22,6 +23,7 @@ import {
   pluck,
   safe,
   settled,
+  toBoolean,
   toJSON,
   toRelativeTime,
   traverse
@@ -501,6 +503,30 @@ test('settled', async () => {
   assert.equal(err, 'Fail');
   const data = await settled(Promise.resolve({message: 'Hello'}), ({value}) => value);
   assert.equal(data.message, 'Hello');
+});
+
+test('toBoolean', () => {
+  assert.is(toBoolean(true), true);
+  assert.is(toBoolean(false), false);
+  // truthy strings
+  assert.is(toBoolean('true'), true);
+  assert.is(toBoolean('yes'), true);
+  assert.is(toBoolean('1'), true);
+  assert.is(toBoolean('TRUE'), true);
+  assert.is(toBoolean('anything'), true);
+  // falsy strings
+  assert.is(toBoolean('false'), false);
+  assert.is(toBoolean('no'), false);
+  assert.is(toBoolean('0'), false);
+  assert.is(toBoolean('null'), false);
+  assert.is(toBoolean('undefined'), false);
+  // non-boolean, non-string values use Boolean()
+  assert.is(toBoolean(0), false);
+  assert.is(toBoolean(1), true);
+  assert.is(toBoolean(42), true);
+  assert.is(toBoolean(''), false);
+  assert.is(toBoolean(null), false);
+  assert.is(toBoolean(undefined), false);
 });
 
 test('toJSON', () => {
