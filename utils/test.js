@@ -4,10 +4,13 @@ import { snoop } from 'snoop';
 import * as assert from 'uvu/assert';
 
 import {
+  attr,
   combine,
   cx,
   distance,
   dot,
+  empty,
+  fill,
   format,
   html,
   isElement,
@@ -17,16 +20,21 @@ import {
   noop,
   observable,
   on,
+  once,
   only,
   ordinal,
   pipe,
   pluck,
   safe,
   settled,
+  slug,
   toBoolean,
   toJSON,
+  toRGB,
   toRelativeTime,
-  traverse
+  traverse,
+  validate,
+  wrap
 } from './index.js';
 
 const test = suite('utils');
@@ -48,6 +56,20 @@ test.before(async () => {
 test.before.each(() => {
   div?.remove();
   div = document.createElement('div');
+});
+
+test('attr', () => {
+  div.setAttribute('id', 'test');
+  assert.is(attr(div, 'id'), 'test');
+  assert.is(attr(div, 'missing'), null);
+  attr(div, 'role', 'button');
+  assert.is(div.getAttribute('role'), 'button');
+  attr(div, 'role', null);
+  assert.is(div.getAttribute('role'), null);
+  attr(div, 'disabled', true);
+  assert.is(div.getAttribute('disabled'), '');
+  attr(div, 'disabled', false);
+  assert.is(div.getAttribute('disabled'), null);
 });
 
 test('combine', () => {
@@ -112,6 +134,21 @@ test('dot', () => {
   assert.equal(dot(o, 'a.b.c', 'Minnesota'), o);
   assert.equal(dot(o, 'a.b.c.d', 'Montana'), o);
   assert.equal(dot(o, 'a.b.c'), {d: 'Montana'});
+});
+
+test('empty', () => {
+  div.innerHTML = '<p>a</p><p>b</p><p>c</p>';
+  assert.is(div.children.length, 3);
+  const returned = empty(div);
+  assert.is(returned, div);
+  assert.is(div.children.length, 0);
+});
+
+test('fill', () => {
+  assert.equal(fill(0, 'x'), []);
+  assert.equal(fill(3, 'x'), ['x', 'x', 'x']);
+  assert.equal(fill(1, null), [null]);
+  assert.equal(fill(3, i => i * 2), [0, 2, 4]);
 });
 
 test('format', () => {
@@ -300,7 +337,7 @@ test('on', () => {
   <div id="on">
     <header><button type="button" class="button"><span>a</span></button></header>
     <footer><button type="button" class="button"><span>b</span></button></footer>
-  </div>`;
+  </div>`
 
   document.body.append(div);
   const [ a, b ] = document.querySelectorAll('#on button');
@@ -312,7 +349,7 @@ test('on', () => {
     el.dispatchEvent(new window.Event(event, {bubbles}));
   };
 
-  // on | off : event with selector
+  // event with selector
   callback = snoop(noop);
   off = on('click', '#on button', callback.fn);
   trigger(a, 'click');
@@ -321,7 +358,7 @@ test('on', () => {
   assert.ok(callback.calledOnce);
   assert.is(callback.firstCall.arguments[0].target, a);
 
-  // on | off : event with element
+  // event with element
   callback = snoop(noop);
   off = on('click', a, callback.fn);
   trigger(a, 'click');
@@ -329,7 +366,7 @@ test('on', () => {
   trigger(a, 'click');
   assert.ok(callback.calledOnce);
 
-  // on | off : event with array of elements
+  // event with array of elements
   callback = snoop(noop);
   off = on('click', [a, b], callback.fn);
   trigger(a, 'click');
@@ -338,7 +375,7 @@ test('on', () => {
   trigger(a, 'click');
   assert.ok(callback.callCount === 2);
 
-  // on | off : multiple events with selector
+  // multiple events with selector
   callback = snoop(noop);
   off = on('mouseenter mouseleave', '#on button', callback.fn);
   trigger(a, 'mouseenter', false);
@@ -347,7 +384,7 @@ test('on', () => {
   trigger(a, 'mouseenter', false);
   assert.ok(callback.callCount === 2);
 
-  // on | off : multiple events with element
+  // multiple events with element
   callback = snoop(noop);
   off = on('mouseenter mouseleave', a, callback.fn);
   trigger(a, 'mouseenter', false);
@@ -356,7 +393,7 @@ test('on', () => {
   trigger(a, 'mouseenter', false);
   assert.ok(callback.callCount === 2);
 
-  // on | off : multiple events with array of elements
+  // multiple events with array of elements
   callback = snoop(noop);
   off = on('mouseenter mouseleave', [a, b], callback.fn);
   trigger(a, 'mouseenter', false);
@@ -365,7 +402,7 @@ test('on', () => {
   trigger(a, 'mouseenter', false);
   assert.ok(callback.callCount === 2);
 
-  // on | off : multiple events as array with selector
+  // multiple events as array with selector
   callback = snoop(noop);
   off = on(['click', 'dblclick'], '#on button', callback.fn);
   trigger(a, 'dblclick');
@@ -373,7 +410,7 @@ test('on', () => {
   trigger(a, 'dblclick');
   assert.ok(callback.calledOnce);
 
-  // on | off : event with selector and scope
+  // event with selector and scope
   callback = snoop(noop);
   off = on('click', '#on button', callback.fn, div.querySelector('header'));
   trigger(a, 'click');
@@ -389,6 +426,17 @@ test('on', () => {
   trigger(a.firstElementChild, 'click');
   off();
   assert.is(callback.firstCall.arguments[0].target, a);
+});
+
+test('once', () => {
+  const callback = snoop(noop);
+  const btn = document.createElement('button');
+  document.body.append(btn);
+  once('click', btn, callback.fn);
+  btn.dispatchEvent(new window.Event('click', {bubbles: true}));
+  btn.dispatchEvent(new window.Event('click', {bubbles: true}));
+  assert.ok(callback.calledOnce);
+  btn.remove();
 });
 
 test('only', () => {
@@ -460,13 +508,11 @@ test('pluck', () => {
     {name: 'John', email: 'john@example.com'},
     {name: 'Jane', email: 'jane@example.com'},
   ]);
-
   // supports dot notation via only()
   assert.equal(pluck(users, ['name', 'stats.age']), [
     {name: 'John', age: 45},
     {name: 'Jane', age: 39},
   ]);
-
   // supports renaming via only()
   assert.equal(pluck(users, ['name', 'stats.age:years']), [
     {name: 'John', years: 45},
@@ -481,14 +527,12 @@ test('safe', async () => {
   await safe(errorFn.fn, errorHandler.fn)();
   assert.ok(errorFn.called);
   assert.ok(errorHandler.called);
-
   // success path (handler not called)
   const successFn = snoop(async () => 'ok');
   const successHandler = snoop(noop);
   await safe(successFn.fn, successHandler.fn)();
   assert.ok(successFn.called);
   assert.not.ok(successHandler.called);
-
   // args forwarded to fn
   const argFn = snoop(async (a, b) => a + b);
   const argHandler = snoop(noop);
@@ -503,6 +547,14 @@ test('settled', async () => {
   assert.equal(err, 'Fail');
   const data = await settled(Promise.resolve({message: 'Hello'}), ({value}) => value);
   assert.equal(data.message, 'Hello');
+});
+
+test('slug', () => {
+  assert.is(slug('  Hello  World  '), 'hello-world');
+  assert.is(slug('dashes--and_underscores'), 'dashes-and_underscores');
+  assert.is(slug('--Special!@#$%Characters--'), 'specialcharacters');
+  assert.is(slug('MiXeD CaSe 123'), 'mixed-case-123');
+  assert.is(slug(123), '123');
 });
 
 test('toBoolean', () => {
@@ -550,6 +602,20 @@ test('toJSON', () => {
   assert.equal(toJSON(a, {number: 44, name: 'Nik'}), string);
 });
 
+test('toRGB', () => {
+  assert.equal(toRGB('#ff0000'), [255, 0, 0]);
+  assert.equal(toRGB('FF0000'),  [255, 0, 0]);
+  assert.equal(toRGB('#00ff00'), [0, 255, 0]);
+  assert.equal(toRGB('#0000ff'), [0, 0, 255]);
+  assert.equal(toRGB('#ffffff'), [255, 255, 255]);
+  assert.equal(toRGB('#000000'), [0, 0, 0]);
+  assert.equal(toRGB('#1a2b3c'), [26, 43, 60]);
+  // shorthand and invalid inputs return null
+  assert.is(toRGB('#fff'), null);
+  assert.is(toRGB('abc'), null);
+  assert.is(toRGB(''), null);
+});
+
 test('toRelativeTime', () => {
   const now = Date.now();
   assert.is(toRelativeTime(new Date(now - 60 * 1000)), '1 minute ago');
@@ -584,14 +650,51 @@ test('traverse', () => {
       <li>Minnesota</li>
       <li>Colorado</li>
     </ul>
-  </main>
-  `
+  </main>`
+
   const tags = [];
   const text = [];
   traverse(node, el => tags.push(el.nodeName.toLowerCase()));
   traverse(node, el => text.push(el.wholeText?.trim()), NodeFilter.SHOW_TEXT);
   assert.equal(tags.join(' '), 'div header h1 main p strong ul li li');
   assert.equal(text.filter(Boolean).join(' '), 'Hello Lorem ipsum dolor Minnesota Colorado');
+});
+
+test('validate', () => {
+  const rules = {
+    email    : (value) => /.+@.+\..+/.test(value) || 'invalid email',
+    password : (value) => value?.length >= 8 || 'too short',
+    confirm  : (value, data) => value === data.password || 'must match',
+  };
+
+  let errors = validate({email: 'hello@exmple.com', password: 'password', confirm: 'password'}, rules)
+  assert.is(errors, null);
+
+  errors = validate({name: ' Nik '}, {name: value => value === 'Nik' || 'Not trimmed'});
+  assert.is(errors, null);
+
+  errors = validate({email: 'bad', password: 'abc', confirm: '123'}, rules);
+  assert.is(errors.email, 'invalid email');
+  assert.is(errors.password, 'too short');
+  assert.is(errors.confirm, 'must match');
+
+  // rule returning true means valid
+  assert.is(validate({x: false}, {x: () => true}), null);
+
+  // object error merges into errors
+  const objRules = {field: () => ({a: 'error a', b: 'error b'})};
+  assert.equal(validate({field: ''}, objRules), {a: 'error a', b: 'error b'});
+});
+
+test('wrap', () => {
+  assert.is(wrap(0, 3), 0);
+  assert.is(wrap(2, 3), 2);
+  assert.is(wrap(3, 3), 0);
+  assert.is(wrap(5, 3), 2);
+  assert.is(wrap(-1, 3), 2);
+  assert.is(wrap(-4, 3), 2);
+  assert.is(wrap(-1, ['a', 'b', 'c']), 2);
+  assert.is(wrap(3,  ['a', 'b', 'c']), 0);
 });
 
 test.run();
