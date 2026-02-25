@@ -46,12 +46,29 @@
 
   <article>
 
-    <h2 class="mb-3 text-2xl font-bold">Toggle</h2>
+    <h2 class="mb-3 text-2xl font-bold">Toggles</h2>
 
     <div class="flex gap-2" data-state="{active: true}">
-      <span class="w-20 grid place-content-center rounded-sm font-semibold text-white text-center select-none" :class="{active: active, inactive: !active}" :text="active ? 'ON' : 'OFF'"></span>
+      <span class="w-20 grid place-content-center rounded-sm font-semibold text-white text-center select-none" :class="{active: active, inactive: !active}" :text="active ? 'YES' : 'NO'"></span>
       <button class="w-30" @click="active = !active" :text="active ? 'Deactivate' : 'Activate'"></button>
     </div>
+
+    <!-- <label>
+      <input type="checkbox" name="toggle" />
+    </label> -->
+    <hr class="my-6 border-gray-300">
+
+    <button
+      type="button"
+      role="switch"
+      class="inline-flex w-32 p-1 text-white transition-colors bg-red-600 aria-checked:bg-green-600 rounded-md relative before:absolute before:top-1 before:left-1 before:w-[60px] before:h-[40px] before:rounded-sm before:bg-white before:transition-transform aria-checked:before:translate-x-full"
+      @click="active = !active"
+      aria-label="Toggle"
+      :aria-checked="active"
+      data-state="{active: false}">
+      <span class="w-1/2 py-2 text-center font-semibold uppercase">On</span>
+      <span class="w-1/2 py-2 text-center font-semibold uppercase">Off</span>
+    </button>
 
   </article>
 
@@ -88,18 +105,18 @@
 
       <div class="mb-3">
         <label for="example-name" class="sr-only">Name</label>
-        <input id="example-name" :model="fields.name" type="text" placeholder="Full Name" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
+        <input id="example-name" :model="fields.name" type="text" placeholder="Full Name" class="p-3 w-full rounded border-2 border-gray-300 bg-white">
       </div>
 
       <div class="mb-3">
         <label for="example-email" class="sr-only">Email</label>
-        <input id="example-email" :model="fields.email" type="email" placeholder="Email Address" class="p-3 w-full rounded border border-gray-300 bg-white shadow">
+        <input id="example-email" :model="fields.email" type="email" placeholder="Email Address" class="p-3 w-full rounded border-2 border-gray-300 bg-white">
       </div>
 
       <div class="mb-3 flex items-center gap-3">
         <div>
           <label for="example-age" class="sr-only">Age</label>
-          <input id="example-age" :model="fields.age" type="number" placeholder="Age" class="p-3 w-18 rounded border border-gray-300 bg-white shadow">
+          <input id="example-age" :model="fields.age" type="number" placeholder="Age" min="0" class="p-3 w-20 rounded border-2 border-gray-300 bg-white">
         </div>
         <span class="text-sm text-gray-500" :show="fields.age">
           only <span :text="to100"></span> years until you're 100!
