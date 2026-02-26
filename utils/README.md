@@ -81,6 +81,7 @@ Breaking changes introduced in version `2.0.0`:
 *   [shuffle](#shuffle)
 *   [slug](#slug)
 *   [svg](#svg)
+*   [template](#template)
 *   [throttle](#throttle)
 *   [toArray](#toarray)
 *   [toBoolean](#toboolean)
@@ -687,8 +688,9 @@ Extracts a property value from each item in an array, or multiple properties usi
 
 ```javascript
 pluck(users, 'name')                // ['John', 'Jane']
+pluck(users, 'stats.age')           // [45, 39]
 pluck(users, ['name', 'email'])     // [{name: 'John', email: '...'}, {name: 'Jane', email: '...'}]
-pluck(users, ['name', 'stats.age']) // [{name: 'John', age: 45}, {name: 'Jane', age: 32}]
+pluck(users, ['name', 'stats.age']) // [{name: 'John', age: 45}, {name: 'Jane', age: 39}]
 ```
 
 Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** array of values when key is a string, or array of objects when key is an array
@@ -806,11 +808,10 @@ Awaits a promise and returns \[value, error] tuple for easier error handling
 #### Examples
 
 ```javascript
-const [data, err] = await settled(fetchUser(id));
-if (err) handleError(err);
+const [ value, error ] = await settled(fetch(...));
 ```
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)>** \[value, reason] tuple
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)>** \[value, error] array
 
 ### shuffle
 
@@ -856,6 +857,25 @@ const circle = svg`
 ```
 
 Returns **[SVGElement](https://developer.mozilla.org/docs/Web/SVG/Element/animate)** parsed SVG element
+
+### template
+
+Micro-templating with `{{ }}` interpolation and `{# #}` evaluation
+
+#### Parameters
+
+*   `str` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** template selector or string
+*   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** optional data object
+
+#### Examples
+
+```javascript
+const render = template('#example');
+const html = render({name: 'Nik'});
+const html = template('<p>{{ name }}</p>', {name: 'Nik'});
+```
+
+Returns **([Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function) | [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String))** render function, or rendered string if data is provided
 
 ### throttle
 
