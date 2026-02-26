@@ -57,6 +57,7 @@ export { settled } from './lib/settled.js';
 export { shuffle } from './lib/shuffle.js';
 export { slug } from './lib/slug.js';
 export { svg } from './lib/svg.js';
+export { template } from './lib/template.js';
 export { throttle } from './lib/throttle.js';
 export { toArray } from './lib/toArray.js';
 export { toBoolean } from './lib/toBoolean.js';

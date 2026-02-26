@@ -28,6 +28,7 @@ import {
   safe,
   settled,
   slug,
+  template,
   toBoolean,
   toJSON,
   toRGB,
@@ -555,6 +556,34 @@ test('slug', () => {
   assert.is(slug('--Special!@#$%Characters--'), 'specialcharacters');
   assert.is(slug('MiXeD CaSe 123'), 'mixed-case-123');
   assert.is(slug(123), '123');
+});
+
+test('template', () => {
+  // template string with interpolation
+  assert.is(template('<span>{{ name }}</span>', {name: 'Nik'}), '<span>Nik</span>');
+  // template string with evaluation
+  assert.is(template('{# for (var i = 0; i < n; i++) { #}<i>{{ i }}</i>{# } #}', {n: 3}), '<i>0</i><i>1</i><i>2</i>');
+
+  // returns a reusable function when no data is passed
+  const render = template('<div>{{ x }}</div>');
+  assert.type(render, 'function');
+  assert.is(render({x: 'a'}), '<div>a</div>');
+  assert.is(render({x: 'b'}), '<div>b</div>');
+
+  const script = html`
+  <script type="text/template" id="example">
+    <p>{{ content }}</p>
+  </script>`
+
+  document.body.append(script);
+  assert.is(template('#example', {content: 'Lorem ipsum dolor'}), '<p>Lorem ipsum dolor</p>');
+
+  // selector returns a cached function
+  const a = template('#example');
+  const b = template('#example');
+  assert.is(a, b);
+
+  script.remove();
 });
 
 test('toBoolean', () => {
