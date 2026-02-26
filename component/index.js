@@ -111,6 +111,11 @@ export default class Component {
     };
 
     traverse(this.el, child => {
+
+      if (child.closest('[data-state]')?.contains(this.el) === false) {
+        return;
+      }
+
       for (const {name, value} of [...child.attributes]) {
         if (name.startsWith(':')) {
           bindDirective(this, child, name.slice(1), value);

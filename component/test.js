@@ -515,4 +515,22 @@ test('computed getter updates when state changes', async () => {
   assert.is(el.querySelector('span').textContent, 'Jane');
 });
 
+test('nested components with data-state ignored', async () => {
+  const el = create(`
+    <div data-state="{name: 'outer'}">
+      <div :text="name"></div>
+      <div data-state="{name: 'inner'}">
+        <p :text="name"></p>
+        <button @click="name = 'clicked'">go</button>
+      </div>
+    </div>
+  `);
+  new Component(el);
+  await tick();
+  assert.is(el.firstElementChild.textContent, 'outer');
+  assert.is(el.querySelector('p').textContent, '');
+  assert.ok(el.querySelector('p').hasAttribute(':text'));
+  assert.ok(el.querySelector('button').hasAttribute('@click'));
+});
+
 test.run();
