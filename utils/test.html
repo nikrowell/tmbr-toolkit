@@ -2,116 +2,347 @@
 <html lang="en">
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@tmbr/utils</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>@tmbr/utils</title>
+
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: monospace; font-size: 1rem; padding: 2em; background: #111; color: #eee; }
+  h1 { font-size: 1rem; margin-bottom: 1em; }
+  ul { list-style: none; position: relative; z-index: 10; }
+  li { padding: 4px 0; }
+  li.pass { color: #4ade80; }
+  li.fail { color: #f87171; }
+  li.pass::before { content: '✓ '; }
+  li.fail::before { content: '✗ '; }
+  li .error { color: #fca5a5; font-size: 0.8em; margin-left: 1.25rem; margin-top: 0.5em; margin-bottom: 0.25em; }
+</style>
 
 </head>
 <body>
 
-<div id="trap">
-    <button type="button">Menu</button>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-        <input type="search" placeholder="Search" />
-    </nav>
+<h1>@tmbr/utils</h1>
+
+<ul id="results"></ul>
+
+<!-- trap -->
+<div id="trap" style="position:absolute;left:-9999px">
+  <button type="button">Menu</button>
+  <nav>
+    <a href="#">One</a>
+    <a href="#">Two</a>
+    <input type="search" placeholder="Search" />
+  </nav>
 </div>
 
+<!-- coords -->
+<div id="coords" style="width:200px;height:200px;position:absolute;left:100px;top:100px;"></div>
+<!-- ro -->
+<div id="ro" style="width:100px;height:100px;position:absolute;left:-9999px;"></div>
+
 <script type="module">
-import { io } from './lib/io.js';
-import { once } from './lib/once.js';
-import { request } from './lib/request.js';
 import { cookie } from './lib/cookie.js';
-import { worker } from './lib/worker.js';
+import { coords } from './lib/coords.js';
+import { io } from './lib/io.js';
+import { ro } from './lib/ro.js';
+import { svg } from './lib/svg.js';
 import { trap } from './lib/trap.js';
+import { focusables } from './lib/focusables.js';
+import { request } from './lib/request.js';
+import { worker } from './lib/worker.js';
 
-// <div style="height:1000px;width:100px;background:red;margin:30px auto"></div>
-// <div id="io" style="height:100px;width:100px;background:green;margin:30px auto"></div>
-// <div style="height:1000px;width:100px;background:red;margin:30px auto"></div>
-// const unobserve = io(document.getElementById('io'), {
-//     enter: () => console.log('enter'),
-//     leave: () => console.log('leave'),
-//     once: false,
-//     rootMargin: '30px'
-// });
-// setTimeout(unobserve, 5000);
+const results = [];
 
+function assert(value, msg = 'expected truthy') {
+  if (!value) throw new Error(msg);
+}
 
+assert.ok = (value, msg) => {
+  if (!value) throw new Error(msg || 'expected truthy value');
+};
+assert.is = (a, b, msg) => {
+  if (a !== b) throw new Error(msg || `expected ${JSON.stringify(a)} to equal ${JSON.stringify(b)}`);
+};
+assert.type = (value, type, msg) => {
+  if (typeof value !== type) throw new Error(msg || `expected typeof ${type}, got ${typeof value}`);
+};
 
-// const controller = new AbortController();
-// const signal = controller.signal;
-// setTimeout(() => controller.abort(), 2000);
+async function test(name, fn) {
+  try {
+    await fn();
+    results.push({name, pass: true});
+  } catch (err) {
+    results.push({name, pass: false, error: err.message});
+  }
+}
 
-// request.get('https://reqres.in/api/users?page=2&v=123', {delay: 4}, {signal}).then(
-//     res => console.log(res),
-//     err => console.log(err)
-// );
+function render() {
+  const ul = document.getElementById('results');
+  const li = r => `<li class="${r.pass ? 'pass' : 'fail'}">${r.name}${r.error ? `<div class="error">${r.error}</div>` : ''}</li>`;
+  ul.innerHTML = results.map(li).join('');
 
-// request.headers['X-Message'] = 'Hello';
-// request.get('https://jsonplaceholder.typicode.com/users', null).then(console.log);
-// request('GET', 'https://jsonplaceholder.typicode.com/users').then(console.log);
+  const passed = results.filter(r => r.pass).length;
+  const failed = results.length - passed;
+  const styles = `display: inline-block; background: ${failed ? '#FF3B2F' : '#35C759'}; color: #FFFFFF; font-size: 11px; line-height: 25px; font-weight: bold`;
+  console.log(`%c ${results.length} tests • ${passed} passed • ${failed} failed `, styles);
+}
 
+// -------------------------------------------------------- cookie
 
-// cookie('greeting', 'Hello');
-// setTimeout(() => console.log(cookie('greeting')), 100);
-// setTimeout(() => cookie('greeting', null), 200);
-// setTimeout(() => console.log(cookie('greeting')), 300);
-// cookie('example', 'Expire in 30 days', 30);
-// cookie('example', 'Expire on this date', new Date('2024-04-15'));
-// cookie('example', 'Custom cookie attributes', {SameSite: 'strict'});
+await test('cookie', () => {
+  cookie('test', 'hello');
+  assert.is(cookie('test'), 'hello');
 
+  cookie('test', null);
+  assert.is(cookie('test'), undefined);
 
+  cookie('test', 'expire_days', 30);
+  assert.is(cookie('test'), 'expire_days');
 
+  cookie('test', 'expire_date', new Date(Date.now() + 86400000));
+  assert.is(cookie('test'), 'expire_date');
 
-// console.log('before worker');
-// const instance = worker(/* js */`
-//   // comments work in worker code
-//   console.log('in worker');
-//   function calculate(n) {
-//     let value = 0;
-//     for (var i = 0; i < 1_000_000_000; i++) value += Math.pow(i, n);
-//     return n;
-//   }
-//   self.onmessage = function(e) {
-//     self.postMessage(calculate(e.data));
-//   };
-// `);
-// const instance = worker(function() {
-//   // comments work in worker code
-//   console.log('in worker');
-//   function calculate(n) {
-//     let value = 0;
-//     for (var i = 0; i < 1_000_000_000; i++) value += Math.pow(i, n);
-//     return value;
-//   }
-//   self.onmessage = function(e) {
-//     self.postMessage(calculate(e.data));
-//   };
-// });
-// console.log('after worker');
-// instance.onmessage = e => console.log('got it!', e.data);
-// instance.postMessage(1000);
+  cookie('test', 'options', {SameSite: 'Strict'});
+  assert.is(cookie('test'), 'options');
 
-
-/* const el = document.getElementById('trap');
-const btn = el.querySelector('button');
-const nav = el.querySelector('nav');
-let untrap;
-console.log(btn, nav);
-
-document.addEventListener('keyup', event => {
-    event.key === 'Escape' && untrap?.();
+  assert.is(cookie('non_existent'), undefined);
+  cookie('test', null);
 });
 
-btn.addEventListener('click', event => {
-    untrap = trap(nav, elements => {
-        elements.push(btn);
-        return elements;
-    });
-}) */
+// -------------------------------------------------------- coords
 
+await test('coords', () => {
+  // basic event coordinates
+  let event = new MouseEvent('click', {clientX: 150, clientY: 250});
+  let point = coords(event);
+  assert.is(point.x, 150);
+  assert.is(point.y, 250);
+  assert.is(point.px, undefined);
+  assert.is(point.py, undefined);
+  // relative to target element
+  const target = document.getElementById('coords');
+  const rect = target.getBoundingClientRect();
+  event = new MouseEvent('click', {clientX: rect.left + 100, clientY: rect.top + 50});
+  point = coords(event, target);
+  assert.is(point.x, 100);
+  assert.is(point.y, 50);
+  assert.is(point.px, 0.5);
+  assert.is(point.py, 0.25);
+});
+
+// -------------------------------------------------------- svg
+
+await test('svg', () => {
+  const size = 100;
+  const fill = '#FF0000';
+  const el = svg`<svg viewBox="0 0 ${size} ${size}"><circle fill="${fill}" r="${size/2}" /></svg>`;
+  assert.ok(el instanceof SVGElement, 'expected SVGElement');
+  assert.is(el.tagName.toLowerCase(), 'svg');
+  assert.is(el.getAttribute('viewBox'), `0 0 ${size} ${size}`);
+
+  const child = el.querySelector('circle');
+  assert.ok(child instanceof SVGElement, 'child should be SVGElement');
+  assert.is(child.getAttribute('fill'), '#FF0000');
+  assert.is(child.getAttribute('r'), (size / 2).toString());
+});
+
+// -------------------------------------------------------- trap
+
+await test('trap', () => {
+  const btn = document.querySelector('#trap button');
+  const nav = document.querySelector('#trap nav');
+
+  const focusable = nav.querySelectorAll(focusables.join(','));
+  assert.is(focusable.length, 3);
+
+  // start focus on button
+  btn.focus();
+  assert.is(document.activeElement, btn);
+
+  const untrap = trap(nav);
+  assert.is(document.activeElement, focusable[0], 'should focus 1st element');
+  // tab forward
+  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+  assert.is(document.activeElement, focusable[1], 'should focus 2nd element');
+  // tab forward
+  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+  assert.is(document.activeElement, focusable[2], 'should focus input');
+  // tab forward
+  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+  assert.is(document.activeElement, focusable[0], 'should wrap to first');
+  // tab backward
+  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true, shiftKey: true}));
+  assert.is(document.activeElement, focusable[focusable.length - 1], 'should wrap to last');
+
+  untrap();
+  assert.is(document.activeElement, btn, 'should restore focus to button');
+});
+
+await test('trap callback', () => {
+  const btn = document.querySelector('#trap button');
+  const nav = document.querySelector('#trap nav');
+
+  const untrap = trap(nav, elements => elements.concat(btn));
+  const focusable = [...nav.querySelectorAll(focusables.join(',')), btn];
+  assert.is(focusable.length, 4);
+  assert.is(document.activeElement, focusable[0]);
+
+  // tap through all elements to reach button
+  for (let i = 0; i < focusable.length - 1; i++) {
+    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+  }
+
+  assert.is(document.activeElement, btn, 'should focus the button');
+  untrap();
+});
+
+// -------------------------------------------------------- request
+
+await test('request GET', async () => {
+  const data = await request.get('https://jsonplaceholder.typicode.com/users', {_limit: 2});
+  assert.is(data.length, 2);
+});
+
+await test('request POST', async () => {
+  const data = await request.post('https://jsonplaceholder.typicode.com/posts', {title: 'title'});
+  assert.is(data.title, 'title');
+});
+
+await test('request error', async () => {
+  try {
+    await request.get('https://jsonplaceholder.typicode.com/users/999999');
+    throw new Error('should have rejected');
+  } catch (err) {
+    assert.is(err.status, 404);
+  }
+});
+
+await test('request headers', async () => {
+  const originalHandler = request.handler;
+  const originalHeaders = {...request.headers};
+
+  request.handler = res => {
+    assert.ok(res.ok);
+    assert.is(res.status, 200);
+    return res.json();
+  };
+
+  request.headers['X-Test'] = 'hello';
+
+  try {
+    const data = await request.get('https://jsonplaceholder.typicode.com/users/1');
+    assert.ok(data.id, 'request should succeed with custom header');
+  } finally {
+    Object.keys(request.headers).forEach(k => delete request.headers[k]);
+    request.handler = originalHandler;
+    request.headers = originalHeaders;
+  }
+});
+
+await test('request url prefix', async () => {
+  // mock fetch
+  const originalFetch = window.fetch;
+  let requestUrl;
+
+  window.fetch = (url, opts) => {
+    requestUrl = url;
+    return Promise.resolve(new Response('{}', {status: 200}));
+  };
+
+  try {
+    await request.get('api/test');
+    assert.is(requestUrl, '/api/test', 'should prefix with /');
+  } finally {
+    window.fetch = originalFetch;
+  }
+});
+
+// -------------------------------------------------------- worker
+
+await test('worker from string', async () => {
+  const w = worker(`
+    self.onmessage = function(e) { self.postMessage(e.data * 2); }
+  `);
+  const result = await new Promise((resolve, reject) => {
+    w.onmessage = e => resolve(e.data);
+    w.onerror = reject;
+    w.postMessage(21);
+  });
+  assert.is(result, 42);
+  w.terminate();
+});
+
+await test('worker from function', async () => {
+  const w = worker(() => {
+    self.onmessage = function(e) { self.postMessage(e.data.toUpperCase()); };
+  });
+  const result = await new Promise((resolve, reject) => {
+    w.onmessage = e => resolve(e.data);
+    w.onerror = reject;
+    w.postMessage('hello');
+  });
+  assert.is(result, 'HELLO');
+  w.terminate();
+});
+
+await test('worker multiple messages', async () => {
+  const w = worker(`
+    let n = 0;
+    self.onmessage = function(e) { n += e.data; self.postMessage(n); };
+  `);
+  const send = value => new Promise(resolve => {
+    w.onmessage = e => resolve(e.data);
+    w.postMessage(value);
+  });
+  assert.is(await send(1), 1);
+  assert.is(await send(4), 5);
+  w.terminate();
+});
+
+// -------------------------------------------------------- io
+
+await test('io', async () => {
+  const target = document.createElement('div');
+  document.body.appendChild(target);
+  let unobserve;
+
+  const entry = await new Promise(resolve => {
+    unobserve = io(target, {enter: resolve});
+    setTimeout(resolve, 1000);
+  });
+
+  assert.ok(entry instanceof IntersectionObserverEntry, 'entry should be IntersectionObserverEntry');
+  assert.is(entry.target, target);
+  assert.type(unobserve, 'function');
+
+  unobserve();
+  target.remove();
+});
+
+// -------------------------------------------------------- ro
+
+await test('ro', async () => {
+  const target = document.createElement('div');
+  document.body.appendChild(target);
+  let unobserve;
+
+  const entry = await new Promise(resolve => {
+    unobserve = ro(target, entry => entry.contentRect.width === 200 && resolve(entry));
+    setTimeout(() => target.style.width = '200px', 100);
+    setTimeout(() => resolve(null), 1000);
+  });
+
+  assert.ok(entry instanceof ResizeObserverEntry, 'entry should be ResizeObserverEntry');
+  assert.is(entry.target, target);
+  assert.type(unobserve, 'function');
+
+  unobserve();
+  target.remove();
+});
+
+render();
 
 </script>
 
