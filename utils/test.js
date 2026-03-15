@@ -561,6 +561,8 @@ test('slug', () => {
 test('template', () => {
   // template string with interpolation
   assert.is(template('<span>{{ name }}</span>', {name: 'Nik'}), '<span>Nik</span>');
+  // template string with apostrophes and quotes
+  assert.is(template(`they'll {{ a }}'ll "this" and "{{ b }}"`, {a: 'we', b: 'that'}), `they'll we'll "this" and "that"`);
   // template string with evaluation
   assert.is(template('{# for (var i = 0; i < n; i++) { #}<i>{{ i }}</i>{# } #}', {n: 3}), '<i>0</i><i>1</i><i>2</i>');
 
