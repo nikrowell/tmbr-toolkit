@@ -253,9 +253,22 @@ test(':hidden boolean attribute', async () => {
 
 test(':attribute fallback', async () => {
   const el = create(`<div data-state="{url: 'https://example.com'}"><a :href="url">link</a></div>`);
-  new Component(el);
+  const c = new Component(el);
   await tick();
   assert.is(el.querySelector('a').getAttribute('href'), 'https://example.com');
+  c.state.url = '';
+  await tick();
+  assert.not.ok(el.querySelector('a').hasAttribute('href'));
+});
+
+test(':aria-* attribute set to "false" when falsy', async () => {
+  const el = create('<div data-state="{open: false}"><button :aria-expanded="open">toggle</button></div>');
+  const c = new Component(el);
+  await tick();
+  assert.is(el.querySelector('button').getAttribute('aria-expanded'), 'false');
+  c.state.open = true;
+  await tick();
+  assert.is(el.querySelector('button').getAttribute('aria-expanded'), 'true');
 });
 
 test(':model text input sets value from state', async () => {

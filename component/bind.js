@@ -77,8 +77,10 @@ export function bindDirective(component, node, attr, expression) {
     apply = value => { node.className = initial; cx(node, value); };
   } else if (BOOLEANS.has(attr)) {
     apply = value => value ? node.setAttribute(attr, '') : node.removeAttribute(attr);
-  } else {
+  } else if (attr.startsWith('aria-')) {
     apply = value => node.setAttribute(attr, value);
+  } else {
+    apply = value => value ? node.setAttribute(attr, value) : node.removeAttribute(attr);
   }
 
   component.directives.push(state => apply(fn(state)));
