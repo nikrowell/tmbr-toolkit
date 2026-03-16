@@ -261,7 +261,7 @@ test(':attribute fallback', async () => {
   assert.not.ok(el.querySelector('a').hasAttribute('href'));
 });
 
-test(':aria-* attribute set to "false" when falsy', async () => {
+test(':aria-* attribute', async () => {
   const el = create('<div data-state="{open: false}"><button :aria-expanded="open">toggle</button></div>');
   const c = new Component(el);
   await tick();
@@ -269,6 +269,9 @@ test(':aria-* attribute set to "false" when falsy', async () => {
   c.state.open = true;
   await tick();
   assert.is(el.querySelector('button').getAttribute('aria-expanded'), 'true');
+  c.state.open = null;
+  await tick();
+  assert.not.ok(el.querySelector('button').hasAttribute('aria-expanded'));
 });
 
 test(':model text input sets value from state', async () => {
