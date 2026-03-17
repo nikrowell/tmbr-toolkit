@@ -1,5 +1,5 @@
 import { on, findOne, findAll, isArray, isDefined, isObject, isString, toJSON, traverse } from '@tmbr/utils';
-import { bindDirective, bindEvent } from './bind.js';
+import { bindDirective, bindEvent, registry, scope } from './bind.js';
 
 let cache;
 let queue;
@@ -8,6 +8,7 @@ let scheduled = false;
 function enqueue(component) {
   queue ??= new Set();
   queue.add(component);
+  component.dependents?.forEach(child => queue.add(child));
   if (scheduled) return;
   queueMicrotask(flush);
   scheduled = true;
@@ -25,17 +26,30 @@ function render(component) {
 
   if (!context) {
     const proto = Object.getPrototypeOf(component);
+    const isSubclass = proto !== Component.prototype;
 
-    context = proto !== Component.prototype ? new Proxy(component.state, {
+    context = new Proxy(component.state, {
       has(target, key) {
-        const own = Object.getOwnPropertyDescriptor(proto, key);
-        return own?.get ? true : key in target;
+        if (key === 'scope') {
+          return true;
+        }
+        if (isSubclass) {
+          const own = Object.getOwnPropertyDescriptor(proto, key);
+          if (own?.get) return true;
+        }
+        return key in target;
       },
       get(target, key, receiver) {
-        const own = Object.getOwnPropertyDescriptor(proto, key);
-        return own?.get ? own.get.call(component) : Reflect.get(target, key, receiver);
+        if (key === 'scope') {
+          return scope(component);
+        }
+        if (isSubclass) {
+          const own = Object.getOwnPropertyDescriptor(proto, key);
+          if (own?.get) return own.get.call(component);
+        }
+        return Reflect.get(target, key, receiver);
       }
-    }) : component.state;
+    });
 
     cache.set(component, context);
   }
@@ -82,6 +96,8 @@ export default class Component {
 
     this.el.removeAttribute('data-props');
     this.el.removeAttribute('data-state');
+
+    registry.set(this.el, this);
     this.init?.();
   }
 
@@ -141,8 +157,8 @@ export default class Component {
 
   on(event, target, fn) {
     const off = on(event, target, fn, this.el);
-    this.offs ??= [];
-    this.offs.push(off);
+    this.listeners ??= [];
+    this.listeners.push(off);
     return off;
   }
 
@@ -152,10 +168,12 @@ export default class Component {
   }
 
   destroy() {
+    this.ancestors?.forEach(a => a.dependents?.delete(this));
+    this.listeners?.forEach(off => off());
     this.controller?.abort();
     this.directives.length = 0;
-    this.offs?.forEach(off => off());
     cache?.delete(this);
     queue?.delete(this);
+    registry.delete(this.el);
   }
 }

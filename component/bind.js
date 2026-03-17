@@ -1,5 +1,7 @@
 import { cx, dot, isFunction } from '@tmbr/utils';
 
+export const registry = new WeakMap();
+
 const BOOLEANS = new Set([
   'allowfullscreen',
   'async',
@@ -26,6 +28,43 @@ const BOOLEANS = new Set([
   'reversed',
   'selected'
 ]);
+
+function findParent(component) {
+  let el = component.el.parentElement;
+
+  while (el) {
+    if (registry.has(el)) return registry.get(el);
+    el = el.parentElement;
+  }
+}
+
+export function scope(component) {
+  if (component.scope) return component.scope;
+
+  const ancestors = [];
+  let ancestor = findParent(component);
+
+  while (ancestor) {
+    ancestor.dependents ??= new Set();
+    ancestor.dependents.add(component);
+    ancestors.push(ancestor);
+    ancestor = findParent(ancestor);
+  }
+
+  component.ancestors = ancestors;
+  component.scope = new Proxy({}, {
+    get(_, key) {
+      return ancestors.find(a => key in a.state)?.state[key];
+    },
+    set(_, key, value) {
+      const a = ancestors.find(a => key in a.state);
+      if (a) a.state[key] = value;
+      return true;
+    }
+  });
+
+  return component.scope;
+};
 
 export function bindDirective(component, node, attr, expression) {
 
@@ -100,7 +139,7 @@ export function bindEvent(component, node, attr, value) {
 
   const callback = isFunction(component[value])
     ? component[value]
-    : new Function('event', 'state', `
+    : new Function('event', 'state', 'scope', `
       try {
         with (state) { ${value} };
       } catch (e) {
@@ -120,7 +159,7 @@ export function bindEvent(component, node, attr, value) {
     if (modifiers.includes('self') && node !== event.target) return;
     if (modifiers.includes('stop')) event.stopPropagation();
     if (modifiers.includes('prevent')) event.preventDefault();
-    callback.call(component, event, component.state);
+    callback.call(component, event, component.state, scope(component));
   }
 
   target.addEventListener(name, listener, options);

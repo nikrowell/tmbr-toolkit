@@ -532,6 +532,7 @@ test('computed getter updates when state changes', async () => {
 });
 
 test('nested components with data-state ignored', async () => {
+
   const el = create(`
     <div data-state="{name: 'outer'}">
       <div :text="name"></div>
@@ -541,12 +542,62 @@ test('nested components with data-state ignored', async () => {
       </div>
     </div>
   `);
+
   new Component(el);
   await tick();
   assert.is(el.firstElementChild.textContent, 'outer');
   assert.is(el.querySelector('p').textContent, '');
   assert.ok(el.querySelector('p').hasAttribute(':text'));
   assert.ok(el.querySelector('button').hasAttribute('@click'));
+});
+
+test('scope exposed to nested components', async () => {
+
+  const el = create(`
+    <div data-state="{text: 'hello'}">
+      <div :data-text="text"></div>
+      <div data-state="{open: false}">
+        <button @click="scope.text = 'aloha'"></button>
+        <span :text="scope.text"></span>
+      </div>
+      <div></div>
+    </div>
+  `);
+
+  const parent = new Component(el);
+  new Component(el.querySelector('[data-state]'));
+  await tick();
+  assert.is(el.querySelector('span').textContent, 'hello');
+  parent.state.text = 'hi';
+  await tick();
+  assert.is(el.firstElementChild.dataset.text, 'hi');
+  assert.is(el.querySelector('span').textContent, 'hi');
+  el.querySelector('button').click();
+  assert.is(parent.state.text, 'aloha');
+});
+
+test('scope walks ancestor chain', async () => {
+
+  const el = create(`
+    <div data-state="{color: 'green', name: 'outer'}">
+      <div data-state="{size: 'large', name: 'inner'}">
+        <div data-state="{open: false}">
+          <span :data-color="scope.color" :data-name="scope.name"></span>
+        </div>
+      </div>
+    </div>
+  `);
+
+  const grandparent = new Component(el);
+  const parent = new Component(grandparent.el.querySelector('[data-state]'));
+  const child = new Component(parent.el.querySelector('[data-state]'));
+  await tick();
+  assert.is(el.querySelector('span').dataset.color, 'green');
+  assert.is(el.querySelector('span').dataset.name, 'inner');
+
+  assert.ok(parent.dependents.has(child));
+  child.destroy();
+  assert.not.ok(parent.dependents.has(child));
 });
 
 test.run();
