@@ -111,6 +111,26 @@ Events are attached with `@event.modifier="handler"` where handler is an express
 | `.window`   | listens to `window`                                   |
 | `.document` | listens to `document`                                 |
 
+## Scope
+
+Nested components can read and write ancestor state via `scope`:
+
+```html
+<div data-state="{type: null}">
+  <div data-state="{open: false}" @click.outside="open = false">
+    <button type="button" aria-controls="example" :aria-expanded="open" @click="open = !open">
+      <span :text="scope.type ?? 'Select Type'"></span>
+    </button>
+    <menu id="example">
+      <li><button type="button" @click="scope.type = 'standard'">Standard</button></li>
+      <li><button type="button" @click="scope.type = 'delux'">Delux</button></li>
+    </menu>
+  </div>
+</div>
+```
+
+Parent components must be instantiated before their children. When a parent's state changes, any child that has accessed `scope` is automatically re-rendered.
+
 ## Refs
 
 Elements with a `ref` attribute are collected into `this.dom`. Multiple elements with the same name are grouped into an array. Use bracket syntax `ref="[items]"` to force an array even with a single element.
