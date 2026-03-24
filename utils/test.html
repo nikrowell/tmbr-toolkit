@@ -28,19 +28,20 @@
 <ul id="results"></ul>
 
 <!-- trap -->
-<div id="trap" style="position:absolute;left:-9999px">
+<div id="trap" style="position: absolute; left: -9999px">
   <button type="button">Menu</button>
   <nav>
-    <a href="#">One</a>
-    <a href="#">Two</a>
+    <a href="#1">One</a>
+    <a href="#2">Two</a>
     <input type="search" placeholder="Search" />
   </nav>
 </div>
 
 <!-- coords -->
-<div id="coords" style="width:200px;height:200px;position:absolute;left:100px;top:100px;"></div>
+<div id="coords" style="width: 200px; height: 200px; position: absolute; left: 100px; top: 100px;"></div>
+
 <!-- ro -->
-<div id="ro" style="width:100px;height:100px;position:absolute;left:-9999px;"></div>
+<div id="ro" style="width: 100px; height: 100px; position: absolute; left :-9999px;"></div>
 
 <script type="module">
 import { cookie } from './lib/cookie.js';
@@ -162,10 +163,10 @@ await test('trap', () => {
   assert.is(document.activeElement, btn);
 
   const untrap = trap(nav);
-  assert.is(document.activeElement, focusable[0], 'should focus 1st element');
+  assert.is(document.activeElement, focusable[0], 'should focus 1st link');
   // tab forward
   window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
-  assert.is(document.activeElement, focusable[1], 'should focus 2nd element');
+  assert.is(document.activeElement, focusable[1], 'should focus 2nd link');
   // tab forward
   window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
   assert.is(document.activeElement, focusable[2], 'should focus input');
@@ -185,17 +186,27 @@ await test('trap callback', () => {
   const nav = document.querySelector('#trap nav');
 
   const untrap = trap(nav, elements => elements.concat(btn));
-  const focusable = [...nav.querySelectorAll(focusables.join(',')), btn];
-  assert.is(focusable.length, 4);
-  assert.is(document.activeElement, focusable[0]);
+  let elements = [...nav.querySelectorAll(focusables.join(',')), btn];
 
-  // tap through all elements to reach button
-  for (let i = 0; i < focusable.length - 1; i++) {
+  assert.is(elements.length, 4);
+  assert.is(document.activeElement, elements[0]);
+
+  // tab through all elements to reach button
+  for (let i = 0; i < elements.length - 1; i++) {
     window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
   }
 
   assert.is(document.activeElement, btn, 'should focus the button');
+
+  // disable input to exclude it from focusable elements on next tab
+  const input = nav.querySelector('input');
+  input.disabled = true;
+
+  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true, shiftKey: true}));
+  assert.is(document.activeElement, nav.querySelector('[href="#2"]'), 'should skip disabled input');
+
   untrap();
+  input.disabled = false;
 });
 
 // -------------------------------------------------------- request

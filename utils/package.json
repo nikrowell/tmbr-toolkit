@@ -1,6 +1,6 @@
 {
   "name": "@tmbr/utils",
-  "version": "2.14.2",
+  "version": "2.14.3",
   "repository": "github:nikrowell/tmbr-toolkit",
   "sideEffects": false,
   "type": "module",
@@ -10,6 +10,7 @@
     "lib"
   ],
   "scripts": {
+    "test": "npx live-server --entry-file=test.html",
     "docs": "npx documentation readme index.js --section=Documentation --markdown-toc-max-depth=2"
   }
 }
