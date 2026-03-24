@@ -77,6 +77,8 @@ Breaking changes introduced in version `2.0.0`:
 *   [ro](#ro)
 *   [round](#round)
 *   [safe](#safe)
+*   [storage](#storage)
+*   [session](#session)
 *   [settled](#settled)
 *   [shuffle](#shuffle)
 *   [slug](#slug)
@@ -796,6 +798,30 @@ Wraps an async function with error handling
 
 Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** wrapped function that catches errors
 
+### storage
+
+localStorage wrapper with support for JSON and scalar values
+
+#### Examples
+
+```javascript
+storage.set('key', {a: 1});
+storage.get('key');          // {a: 1}
+storage.get('missing', 42);  // 42
+storage.remove('key');
+```
+
+### session
+
+sessionStorage wrapper with support for JSON and scalar values
+
+#### Examples
+
+```javascript
+session.set('token', 'example');
+session.get('token');
+```
+
 ### settled
 
 Awaits a promise and returns \[value, error] tuple for easier error handling
@@ -972,7 +998,7 @@ Traps focus within an element for keyboard navigation
 #### Parameters
 
 *   `el` **[Element](https://developer.mozilla.org/docs/Web/API/Element)** container element
-*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** optional function to filter/modify focusable elements
+*   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** optional function to modify focusable elements (re-evaluated on each Tab press)
 
 Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** cleanup function to restore previous focus
 
