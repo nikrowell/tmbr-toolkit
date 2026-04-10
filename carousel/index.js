@@ -57,13 +57,13 @@ class Carousel {
     if (prev) {
       this.prev = prev;
       this.prev.addEventListener('click', this.embla.scrollPrev);
-      attr(prev, 'aria-label', 'Previous Slide');
+      prev.hasAttribute('aria-label') || attr(prev, 'aria-label', 'Previous Slide');
     }
 
     if (next) {
       this.next = next;
       this.next.addEventListener('click', this.embla.scrollNext);
-      attr(next, 'aria-label', 'Next Slide');
+      next.hasAttribute('aria-label') || attr(next, 'aria-label', 'Next Slide');
     }
 
     this.embla.on('select', this.select);
