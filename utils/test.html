@@ -305,6 +305,7 @@ await test('request error', async () => {
     throw new Error('should have rejected');
   } catch (err) {
     assert.is(err.status, 404);
+    assert.ok('data' in err, 'error should include response data');
   }
 });
 

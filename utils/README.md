@@ -77,11 +77,11 @@ Breaking changes introduced in version `2.0.0`:
 *   [ro](#ro)
 *   [round](#round)
 *   [safe](#safe)
-*   [storage](#storage)
-*   [session](#session)
 *   [settled](#settled)
 *   [shuffle](#shuffle)
 *   [slug](#slug)
+*   [storage](#storage)
+*   [session](#session)
 *   [svg](#svg)
 *   [template](#template)
 *   [throttle](#throttle)
@@ -740,7 +740,7 @@ Returns **DOMRect** bounding client rect
 Fetch wrapper with common defaults and convenience methods
 
 *   defaults to sending `'Content-Type': 'application/json'` headers
-*   defaults to resolving with the returned JSON response or rejecting with `errors` and `status`
+*   defaults to resolving with the returned JSON response or rejecting with `data` and `status`
 *   prefixes relative URLs with a preceeding slash
 *   converts the data argument to a JSON string or URL params for `GET` requests
 *   exposes `request.headers` for overriding the default headers
@@ -798,30 +798,6 @@ Wraps an async function with error handling
 
 Returns **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** wrapped function that catches errors
 
-### storage
-
-localStorage wrapper with support for JSON and scalar values
-
-#### Examples
-
-```javascript
-storage.set('key', {a: 1});
-storage.get('key');          // {a: 1}
-storage.get('missing', 42);  // 42
-storage.remove('key');
-```
-
-### session
-
-sessionStorage wrapper with support for JSON and scalar values
-
-#### Examples
-
-```javascript
-session.set('token', 'example');
-session.get('token');
-```
-
 ### settled
 
 Awaits a promise and returns \[value, error] tuple for easier error handling
@@ -858,6 +834,30 @@ Converts a string to a URL-friendly slug
 *   `str` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** string to convert
 
 Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** lowercase, hyphenated slug
+
+### storage
+
+localStorage wrapper with support for JSON and scalar values
+
+#### Examples
+
+```javascript
+storage.set('key', {a: 1});
+storage.get('key');          // {a: 1}
+storage.get('missing', 42);  // 42
+storage.remove('key');
+```
+
+### session
+
+sessionStorage wrapper with support for JSON and scalar values
+
+#### Examples
+
+```javascript
+session.set('token', 'example');
+session.get('token');
+```
 
 ### svg
 

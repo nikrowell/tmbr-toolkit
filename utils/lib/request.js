@@ -2,7 +2,7 @@
  * Fetch wrapper with common defaults and convenience methods
  *
  * - defaults to sending `'Content-Type': 'application/json'` headers
- * - defaults to resolving with the returned JSON response or rejecting with `errors` and `status`
+ * - defaults to resolving with the returned JSON response or rejecting with `data` and `status`
  * - prefixes relative URLs with a preceeding slash
  * - converts the data argument to a JSON string or URL params for `GET` requests
  * - exposes `request.headers` for overriding the default headers
@@ -51,7 +51,7 @@ const headers = {
 const handler = res => new Promise((resolve, reject) => {
   res.text().then(body => {
     const data = JSON.parse(body || null);
-    res.ok ? resolve(data) : reject({errors: data, status: res.status});
+    res.ok ? resolve(data) : reject({data, status: res.status});
   });
 });
 
