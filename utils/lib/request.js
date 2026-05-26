@@ -1,8 +1,11 @@
+import { isArray } from './isArray.js';
+import { isObject } from './isObject.js';
+
 /**
  * Fetch wrapper with common defaults and convenience methods
  *
  * - defaults to sending `'Content-Type': 'application/json'` headers
- * - defaults to resolving with the returned JSON response or rejecting with `data` and `status`
+ * - settles with the parsed JSON response on both success and failure, with a non-enumerable `response` property (`result.response.status`)
  * - prefixes relative URLs with a preceeding slash
  * - converts the data argument to a JSON string or URL params for `GET` requests
  * - exposes `request.headers` for overriding the default headers
@@ -48,11 +51,15 @@ const headers = {
   'Accept': 'application/json',
 };
 
-const handler = res => new Promise((resolve, reject) => {
-  res.text().then(body => {
-    const data = JSON.parse(body || null);
-    res.ok ? resolve(data) : reject({data, status: res.status});
-  });
+const handler = response => response.text().then(body => {
+  const data = JSON.parse(body || null);
+
+  if (isObject(data) || isArray(data)) {
+    Object.defineProperty(data, 'response', {value: response});
+  }
+
+  if (!response.ok) throw data;
+  return data;
 });
 
 export const request = /* @__PURE__ */ Object.assign(req, {

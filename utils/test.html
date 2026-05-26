@@ -291,11 +291,16 @@ await test('trap callback', () => {
 
 await test('request GET', async () => {
   const data = await request.get('https://jsonplaceholder.typicode.com/users', {_limit: 2});
+  assert.ok(Object.keys(data).includes('response') === false);
+  assert.ok(data.response instanceof window.Response);
+  assert.is(data.response.status, 200);
   assert.is(data.length, 2);
+  assert.is(data[0].id, 1);
 });
 
 await test('request POST', async () => {
   const data = await request.post('https://jsonplaceholder.typicode.com/posts', {title: 'title'});
+  assert.is(data.response.status, 201);
   assert.is(data.title, 'title');
 });
 
@@ -304,8 +309,8 @@ await test('request error', async () => {
     await request.get('https://jsonplaceholder.typicode.com/users/999999');
     throw new Error('should have rejected');
   } catch (err) {
-    assert.is(err.status, 404);
-    assert.ok('data' in err, 'error should include response data');
+    assert.is(err.response.status, 404);
+    assert.type(err, 'object');
   }
 });
 
