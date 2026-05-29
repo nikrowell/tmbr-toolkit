@@ -52,7 +52,7 @@ const headers = {
 };
 
 const handler = response => response.text().then(body => {
-  const data = JSON.parse(body || null);
+  const data = JSON.parse(body || null) ?? {};
 
   if (isObject(data) || isArray(data)) {
     Object.defineProperty(data, 'response', {value: response});
