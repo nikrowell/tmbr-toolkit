@@ -94,8 +94,8 @@ test('distance', () => {
 });
 
 test('cx', () => {
-  const classes = cx('one', {'two': true, 'three': 0}, [true && 'four', null && 'five', 'six-seven lol']);
-  /*      */ cx(div, 'one', {'two': true, 'three': 0}, [true && 'four', null && 'five', 'six-seven lol']);
+  const classes = cx('one', {'two': true, 'three': 0}, [true && 'four', null && 'five', true, 'six-seven lol']);
+  /*      */ cx(div, 'one', {'two': true, 'three': 0}, [true && 'four', null && 'five', true, 'six-seven lol']);
   assert.is(classes, 'one two four six-seven lol');
   assert.is(classes, div.className);
   assert.is(cx(div), div.classList);

@@ -28,7 +28,7 @@ export function cx(...args) {
   };
 
   const classes = args.reduce((result, item) => {
-    if (isArray(item))  item = item.filter(Boolean).flatMap(tokenize);
+    if (isArray(item))  item = item.filter(isString).flatMap(tokenize);
     if (isObject(item)) item = Object.entries(item);
     if (isString(item)) item = tokenize(item);
     return item ? result.concat(item) : result;
