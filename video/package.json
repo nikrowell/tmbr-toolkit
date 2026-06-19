@@ -1,0 +1,17 @@
+{
+  "name": "@tmbr/video",
+  "version": "0.1.0",
+  "repository": "github:nikrowell/tmbr-toolkit",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "start": "npx esbuild index.js --outdir=. --servedir=. --format=esm --bundle --watch"
+  },
+  "dependencies": {
+    "@tmbr/component": "^1.2.1",
+    "@tmbr/utils": "^2.13.1"
+  }
+}
