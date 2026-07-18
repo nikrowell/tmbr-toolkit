@@ -133,7 +133,7 @@ Parent components must be instantiated before their children. When a parent's st
 
 ## Refs
 
-Elements with a `ref` attribute are collected into `this.dom`. Multiple elements with the same name are grouped into an array. Use bracket syntax `ref="[items]"` to force an array even with a single element.
+Elements with a `ref` attribute are collected into `this.dom`. Multiple elements with the same name are grouped into an array. Use bracket syntax `ref="[items]"` or `ref="items[]"` to force an array even with a single element.
 
 ```html
 <div>
@@ -143,6 +143,11 @@ Elements with a `ref` attribute are collected into `this.dom`. Multiple elements
     <li ref="[items]">two</li>
   </ul>
 </div>
+```
+
+```js
+this.dom.input // input
+this.dom.items // [li, li]
 ```
 
 ## Computed
@@ -165,11 +170,6 @@ class Example extends Component {
 ```html
 <input type="text" :model="name" />
 First name is <span :text="firstName"></span>
-```
-
-```js
-this.dom.input // input
-this.dom.items // [li, li]
 ```
 
 ## Instance API
