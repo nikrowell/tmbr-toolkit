@@ -131,16 +131,16 @@ Nested components can read and write ancestor state via `scope`:
 
 Parent components must be instantiated before their children. When a parent's state changes, any child that has accessed `scope` is automatically re-rendered.
 
-## Refs
+## DOM References
 
-Elements with a `ref` attribute are collected into `this.dom`. Multiple elements with the same name are grouped into an array. Use bracket syntax `ref="[items]"` or `ref="items[]"` to force an array even with a single element.
+Elements with a `data-dom` attribute are collected into `this.dom`. Multiple elements with the same name are grouped into an array. Use bracket syntax `data-dom="[items]"` or `data-dom="items[]"` to force an array even with a single element.
 
 ```html
 <div>
-  <input ref="input" />
+  <input data-dom="input" />
   <ul>
-    <li ref="[items]">one</li>
-    <li ref="[items]">two</li>
+    <li data-dom="[items]">one</li>
+    <li data-dom="[items]">two</li>
   </ul>
 </div>
 ```
@@ -177,7 +177,7 @@ First name is <span :text="firstName"></span>
 | Property or Method                | Description                                         |
 | --------------------------------- | --------------------------------------------------- |
 | `el`                              | root element                                        |
-| `dom`                             | child elements collected from `ref` attributes      |
+| `dom`                             | child elements collected from `data-dom` attributes |
 | `props`                           | parsed from `data-props` attribute                  |
 | `state`                           | reactive proxy where changes trigger a rerender     |
 | `findOne(selector)`               | scoped `querySelector`                              |

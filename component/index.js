@@ -70,10 +70,10 @@ export default class Component {
       return;
     }
 
-    this.dom = this.findAll('[ref]').reduce((result, child) => {
+    this.dom = this.findAll('[data-dom]').reduce((result, child) => {
 
-      let key = child.getAttribute('ref');
-      child.removeAttribute('ref');
+      let key = child.getAttribute('data-dom');
+      child.removeAttribute('data-dom');
 
       const hasBrackets = key.includes('[');
       hasBrackets && (key = key.replace(/[\[\]]/g, ''));

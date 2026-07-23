@@ -414,32 +414,32 @@ test('@event.self modifier', async () => {
   assert.ok(spy.called);
 });
 
-test('ref as element', () => {
-  const el = create('<div><span ref="label"></span><input ref="input"></div>');
+test('data-dom as element', () => {
+  const el = create('<div><span data-dom="label"></span><input data-dom="input"></div>');
   const c = new Component(el);
   assert.is(c.dom.label, el.children[0]);
   assert.is(c.dom.input, el.children[1]);
 });
 
-test('ref as array', () => {
-  const el = create('<ul><li ref="items">a</li><li ref="items">b</li></ul>');
+test('data-dom as array', () => {
+  const el = create('<ul><li data-dom="items">a</li><li data-dom="items">b</li></ul>');
   const c = new Component(el);
   assert.is(c.dom.items.length, 2);
   assert.is(c.dom.items[1], el.children[1]);
 });
 
-test('ref as explicit array', () => {
-  const el = create('<ul><li ref="[items]">a</li></ul>');
+test('data-dom as explicit array', () => {
+  const el = create('<ul><li data-dom="[items]">a</li></ul>');
   const c = new Component(el);
   assert.ok(Array.isArray(c.dom.items));
 });
 
-test('directives, events and ref attributes removed', () => {
-  const el = create('<button @click="void 0" data-state="{x: 1}"><span ref="test" :text="x"></button>');
+test('directives, events and data-dom attributes removed', () => {
+  const el = create('<button @click="void 0" data-state="{x: 1}"><span data-dom="test" :text="x"></button>');
   new Component(el);
   assert.not.ok(el.hasAttribute('data-state'));
   assert.not.ok(el.hasAttribute('@click'));
-  assert.not.ok(el.querySelector('span').hasAttribute('ref'));
+  assert.not.ok(el.querySelector('span').hasAttribute('data-dom'));
   assert.not.ok(el.querySelector('span').hasAttribute(':text'));
 });
 
