@@ -5,7 +5,8 @@ import { isObject } from './isObject.js';
  * Fetch wrapper with common defaults and convenience methods
  *
  * - defaults to sending `'Content-Type': 'application/json'` headers
- * - settles with the parsed JSON response on both success and failure, with a non-enumerable `response` property (`result.response.status`)
+ * - resolves with the parsed JSON on success and rejects with it on HTTP errors (4xx/5xx) — both carry a non-enumerable `response` property (`result.response.status`)
+ * - aborts, timeouts, and network failures reject with the original error (no `response` property)
  * - prefixes relative URLs with a preceeding slash
  * - converts the data argument to a JSON string or URL params for `GET` requests
  * - exposes `request.headers` for overriding the default headers
