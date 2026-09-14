@@ -155,8 +155,8 @@ export default class Component {
     return findAll(s, this.el);
   }
 
-  on(event, target, fn) {
-    const off = on(event, target, fn, this.el);
+  on(event, target, fn, scope = this.el) {
+    const off = on(event, target, fn, scope);
     this.listeners ??= [];
     this.listeners.push(off);
     return off;

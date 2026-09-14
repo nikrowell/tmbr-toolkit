@@ -184,6 +184,6 @@ First name is <span :text="firstName"></span>
 | `findAll(selector)`               | scoped `querySelectorAll`                           |
 | `init()`                          | called after constructor — override in subclass     |
 | `update(state)`                   | called after each render — override in subclass     |
-| `on(event, target, fn)`           | delegate event listener, cleaned up on `.destroy()` |
+| `on(event, target, fn, scope)`    | delegate event listener, cleaned up on `.destroy()` |
 | `dispatch(type, detail, options)` | dispatches a `CustomEvent` from `.el`               |
 | `destroy()`                       | removes all listeners and directives                |
