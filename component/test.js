@@ -474,6 +474,42 @@ test('destroy removes listeners and clears directives', async () => {
   assert.is(c.directives.length, 0);
 });
 
+test('mount called in constructor', () => {
+  class Tester extends Component { mount() { spy.fn(this.el, this.dom.child, this.state.n) } }
+  const el = create('<div data-state="{n: 1}"><span data-dom="child"></span></div>');
+  new Tester(el);
+  assert.is(spy.callCount, 1);
+  assert.is(spy.lastCall.arguments[0], el);
+  assert.is(spy.lastCall.arguments[1], el.querySelector('span'));
+  assert.is(spy.lastCall.arguments[2], 1);
+});
+
+test('unmount called once on destroy', () => {
+  let directives;
+  class Tester extends Component { unmount() { spy.fn(); directives = this.directives.length; } }
+  const el = create('<div data-state="{n: 1}"><span :text="n"></span></div>');
+  const c = new Tester(el);
+  c.destroy();
+  c.destroy();
+  assert.ok(c.destroyed);
+  assert.is(spy.callCount, 1);
+  assert.is(directives, 1);
+  assert.is(c.directives.length, 0);
+});
+
+test('state changes after destroy do not render', async () => {
+  class Tester extends Component { update() { spy.fn() } }
+  const el = create('<div data-state="{n: 1}"><span :text="n"></span></div>');
+  const c = new Tester(el);
+  await tick();
+  const count = spy.callCount;
+  c.destroy();
+  c.state.n = 2;
+  await tick();
+  assert.is(spy.callCount, count);
+  assert.is(el.querySelector('span').textContent, '1');
+});
+
 test('computed getter accessible in template', async () => {
 
   class Named extends Component {

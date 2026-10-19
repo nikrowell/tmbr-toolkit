@@ -42,8 +42,12 @@ class Counter extends Component {
     count: 0
   };
 
-  init() {
-    console.log('mounted', this.el);
+  mount() {
+    console.log('mount', this.el);
+  }
+
+  unmount() {
+    console.log('unmount', this.el);
   }
 
   inc() {
@@ -61,6 +65,10 @@ class Counter extends Component {
 
 new Counter('#counter');
 ```
+
+## Lifecycle
+
+Subclasses can define optional `mount()` and `unmount()` hooks. `mount()` runs at the end of the constructor, once `this.dom`, `this.props`, and `this.state` are ready. `unmount()` runs when `destroy()` is called, before the component event listeners and directives are removed.
 
 ## State
 
@@ -182,8 +190,10 @@ First name is <span :text="firstName"></span>
 | `state`                           | reactive proxy where changes trigger a rerender     |
 | `findOne(selector)`               | scoped `querySelector`                              |
 | `findAll(selector)`               | scoped `querySelectorAll`                           |
-| `init()`                          | called after constructor — override in subclass     |
-| `update(state)`                   | called after each render — override in subclass     |
+| `mount()`                         | called after constructor — define in subclass       |
+| `update(state)`                   | called after each render — define in subclass       |
+| `unmount()`                       | called by `destroy()` — define in subclass          |
 | `on(event, target, fn, scope)`    | delegate event listener, cleaned up on `.destroy()` |
 | `dispatch(type, detail, options)` | dispatches a `CustomEvent` from `.el`               |
-| `destroy()`                       | removes all listeners and directives                |
+| `destroy()`                       | calls `unmount()`, removes listeners and directives |
+| `destroyed`                       | `true` after `destroy()` has been called            |

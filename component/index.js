@@ -6,6 +6,7 @@ let queue;
 let scheduled = false;
 
 function enqueue(component) {
+  if (component.destroyed) return;
   queue ??= new Set();
   queue.add(component);
   component.dependents?.forEach(child => queue.add(child));
@@ -98,7 +99,7 @@ export default class Component {
     this.el.removeAttribute('data-state');
 
     registry.set(this.el, this);
-    this.init?.();
+    this.mount?.();
   }
 
   #state() {
@@ -168,6 +169,9 @@ export default class Component {
   }
 
   destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.unmount?.();
     this.ancestors?.forEach(a => a.dependents?.delete(this));
     this.listeners?.forEach(off => off());
     this.controller?.abort();
