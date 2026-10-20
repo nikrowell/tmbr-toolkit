@@ -70,6 +70,18 @@ new Counter('#counter');
 
 Subclasses can define optional `mount()` and `unmount()` hooks. `mount()` runs at the end of the constructor, once `this.dom`, `this.props`, and `this.state` are ready. `unmount()` runs when `destroy()` is called, before the component event listeners and directives are removed.
 
+Use `defer()` to register cleanup functions that run on `destroy()`, such as observers or external event subscriptions. It accepts any number of functions or arrays of functions.
+
+```js
+mount() {
+  this.defer(
+    events.on('scroll', this.onScroll),
+    io(this.el, this.onIntersect),
+    ro(this.el, this.onResize),
+  );
+}
+```
+
 ## State
 
 State is deeply reactive so mutations to nested objects and arrays trigger a render.
@@ -194,6 +206,7 @@ First name is <span :text="firstName"></span>
 | `update(state)`                   | called after each render — define in subclass       |
 | `unmount()`                       | called by `destroy()` — define in subclass          |
 | `on(event, target, fn, scope)`    | delegate event listener, cleaned up on `.destroy()` |
+| `defer(...fns)`                   | registers cleanup functions called on `.destroy()`  |
 | `dispatch(type, detail, options)` | dispatches a `CustomEvent` from `.el`               |
 | `destroy()`                       | calls `unmount()`, removes listeners and directives |
 | `destroyed`                       | `true` after `destroy()` has been called            |

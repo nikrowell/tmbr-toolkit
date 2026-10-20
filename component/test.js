@@ -497,6 +497,15 @@ test('unmount called once on destroy', () => {
   assert.is(c.directives.length, 0);
 });
 
+test('defer calls functions once on destroy', () => {
+  const c = new Component(create());
+  c.defer(spy.fn, [spy.fn, spy.fn]);
+  assert.is(spy.callCount, 0);
+  c.destroy();
+  c.destroy();
+  assert.is(spy.callCount, 3);
+});
+
 test('state changes after destroy do not render', async () => {
   class Tester extends Component { update() { spy.fn() } }
   const el = create('<div data-state="{n: 1}"><span :text="n"></span></div>');

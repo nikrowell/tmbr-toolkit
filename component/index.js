@@ -1,4 +1,4 @@
-import { on, findOne, findAll, isArray, isDefined, isObject, isString, toJSON, traverse } from '@tmbr/utils';
+import { on, findOne, findAll, isArray, isDefined, isFunction, isObject, isString, toJSON, traverse } from '@tmbr/utils';
 import { bindDirective, bindEvent, registry, scope } from './bind.js';
 
 let cache;
@@ -158,9 +158,13 @@ export default class Component {
 
   on(event, target, fn, scope = this.el) {
     const off = on(event, target, fn, scope);
-    this.listeners ??= [];
-    this.listeners.push(off);
+    this.defer(off);
     return off;
+  }
+
+  defer(...fns) {
+    this.listeners ??= [];
+    this.listeners.push(...fns.flat());
   }
 
   dispatch(type, detail, options = {}) {
@@ -173,7 +177,7 @@ export default class Component {
     this.destroyed = true;
     this.unmount?.();
     this.ancestors?.forEach(a => a.dependents?.delete(this));
-    this.listeners?.forEach(off => off());
+    this.listeners?.forEach(off => isFunction(off) && off());
     this.controller?.abort();
     this.directives.length = 0;
     cache?.delete(this);
