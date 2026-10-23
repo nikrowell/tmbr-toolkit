@@ -6,7 +6,7 @@ import { noop } from './noop.js';
 import { wrap } from './wrap.js';
 
 /**
- * Traps focus within an element for keyboard navigation
+ * Traps focus within an element for keyboard navigation, cycling through visible focusable elements only
  *
  * @param {Element} el - container element
  * @param {Function} callback - optional function to modify focusable elements (re-evaluated on each Tab press)
@@ -23,8 +23,12 @@ export function trap(el, callback) {
   trapped[0].focus();
   let index = 0;
 
+  function visible(node) {
+    return node.checkVisibility?.({visibilityProperty: true}) ?? true;
+  }
+
   function query() {
-    let elements = findAll(selector, el);
+    let elements = findAll(selector, el).filter(visible);
     if (isFunction(callback)) elements = callback(elements);
     return elements;
   }
@@ -37,7 +41,9 @@ export function trap(el, callback) {
     if (isEmpty(trapped)) return;
 
     index = trapped.indexOf(document.activeElement);
+    if (index === -1 && event.shiftKey) index = 0;
     index = wrap(event.shiftKey ? index - 1 : index + 1, trapped);
+
     trapped[index].focus();
   }
 

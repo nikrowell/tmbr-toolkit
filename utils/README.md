@@ -740,7 +740,8 @@ Returns **DOMRect** bounding client rect
 Fetch wrapper with common defaults and convenience methods
 
 *   defaults to sending `'Content-Type': 'application/json'` headers
-*   settles with the parsed JSON response on both success and failure, with a non-enumerable `response` property (`result.response.status`)
+*   resolves with the parsed JSON on success and rejects with it on HTTP errors (4xx/5xx) — both carry a non-enumerable `response` property (`result.response.status`)
+*   aborts, timeouts, and network failures reject with the original error (no `response` property)
 *   prefixes relative URLs with a preceeding slash
 *   converts the data argument to a JSON string or URL params for `GET` requests
 *   exposes `request.headers` for overriding the default headers
@@ -993,7 +994,7 @@ Returns **([Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ### trap
 
-Traps focus within an element for keyboard navigation
+Traps focus within an element for keyboard navigation, cycling through visible focusable elements only
 
 #### Parameters
 

@@ -31,8 +31,10 @@
 <div id="trap" style="position: absolute; left: -9999px">
   <button type="button">Menu</button>
   <nav>
+    <button type="button" hidden>Hidden</button>
     <a href="#1">One</a>
     <a href="#2">Two</a>
+    <div style="visibility: hidden"><a href="#hidden">Hidden</a></div>
     <input type="search" placeholder="Search" />
   </nav>
 </div>
@@ -229,11 +231,16 @@ await test('storage', () => {
 
 // -------------------------------------------------------- trap
 
+function tab(shiftKey = false) {
+  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true, shiftKey}));
+}
+
 await test('trap', () => {
   const btn = document.querySelector('#trap button');
   const nav = document.querySelector('#trap nav');
 
-  const focusable = nav.querySelectorAll(focusables.join(','));
+  // visible focusables only (hidden elements are interleaved in the markup)
+  const focusable = nav.querySelectorAll('[href="#1"], [href="#2"], input');
   assert.is(focusable.length, 3);
 
   // start focus on button
@@ -241,19 +248,29 @@ await test('trap', () => {
   assert.is(document.activeElement, btn);
 
   const untrap = trap(nav);
-  assert.is(document.activeElement, focusable[0], 'should focus 1st link');
+  assert.is(document.activeElement, focusable[0], 'should skip hidden first button');
   // tab forward
-  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
-  assert.is(document.activeElement, focusable[1], 'should focus 2nd link');
-  // tab forward
-  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
-  assert.is(document.activeElement, focusable[2], 'should focus input');
-  // tab forward
-  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+  tab();
+  assert.is(document.activeElement, focusable[1], 'should focus second link');
+  tab();
+  assert.is(document.activeElement, focusable[2], 'should skip hidden link');
+  tab();
   assert.is(document.activeElement, focusable[0], 'should wrap to first');
   // tab backward
-  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true, shiftKey: true}));
-  assert.is(document.activeElement, focusable[focusable.length - 1], 'should wrap to last');
+  tab(true);
+  assert.is(document.activeElement, focusable[2], 'should wrap to last');
+  tab(true);
+  assert.is(document.activeElement, focusable[1], 'should skip hidden link backward');
+  tab(true);
+  assert.is(document.activeElement, focusable[0], 'should focus first link');
+
+  btn.focus();
+  tab(true);
+  assert.is(document.activeElement, focusable[2], 'shift+tab from outside should focus last');
+
+  btn.focus();
+  tab();
+  assert.is(document.activeElement, focusable[0], 'tab from outside should focus first');
 
   untrap();
   assert.is(document.activeElement, btn, 'should restore focus to button');
@@ -263,24 +280,25 @@ await test('trap callback', () => {
   const btn = document.querySelector('#trap button');
   const nav = document.querySelector('#trap nav');
 
-  const untrap = trap(nav, elements => elements.concat(btn));
-  let elements = [...nav.querySelectorAll(focusables.join(',')), btn];
+  let received;
+  const untrap = trap(nav, elements => {
+    received = elements;
+    return elements.concat(btn);
+  });
 
-  assert.is(elements.length, 4);
+  assert.is(received.length, 3, 'callback should receive only visible elements');
+  let elements = [...received, btn];
   assert.is(document.activeElement, elements[0]);
 
   // tab through all elements to reach button
-  for (let i = 0; i < elements.length - 1; i++) {
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
-  }
-
+  for (let i = 0; i < elements.length - 1; i++) tab();
   assert.is(document.activeElement, btn, 'should focus the button');
 
   // disable input to exclude it from focusable elements on next tab
   const input = nav.querySelector('input');
   input.disabled = true;
 
-  window.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab', bubbles: true, shiftKey: true}));
+  tab(true);
   assert.is(document.activeElement, nav.querySelector('[href="#2"]'), 'should skip disabled input');
 
   untrap();
